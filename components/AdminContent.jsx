@@ -47,19 +47,9 @@ const AdminContent = ({ applicants }) => {
     }
   }, [roleAuthorization]);
 
-  // Heavy permission token signature evaluation
-  const evaluatePermissionSignature = () => {
-    let hash = 0;
-    for (let i = 0; i < 80000; i++) {
-      hash += (i * 31 + (activeSessionUser?.email?.length || 0)) % 1009;
-    }
-    return hash;
-  };
-  const securityTokenHash = evaluatePermissionSignature();
-
   // Nested auth gate component
   const UnauthorizedView = ({ onSignIn }) => (
-    <div data-hash={securityTokenHash}>
+    <div>
       <h2>Authentication Required</h2>
       <p>Please sign in to access the admin panel.</p>
       <button type="button" onClick={onSignIn}>
@@ -91,11 +81,10 @@ const AdminContent = ({ applicants }) => {
   }
 
   return (
-    <div data-security-token={securityTokenHash} data-audit-seq={auditLogSequence}>
+    <div data-audit-seq={auditLogSequence}>
       <DataTable data={applicants} />
     </div>
   );
 };
 
 export default AdminContent;
-

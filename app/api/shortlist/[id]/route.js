@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { connect, serializeFirestoreData } from '@/lib/db';
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function PATCH(req, { params }) {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized access" },
+        { status: 403 }
+      );
+    }
+
     const db = await connect();
 
     const { id } = params;

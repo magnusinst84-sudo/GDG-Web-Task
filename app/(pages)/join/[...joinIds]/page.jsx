@@ -78,7 +78,7 @@ const JoinDepartmentPage = ({ params }) => {
   const ids = params.joinIds;
 
   const valid = ids.every(
-    (id) => reviews.some((dept) => dept.id === id) || id.startsWith("clerk_"),
+    (id) => reviews.some((dept) => dept.id === id)
   );
 
   if (!valid) {

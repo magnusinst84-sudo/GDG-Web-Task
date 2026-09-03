@@ -28,7 +28,6 @@ export async function POST(req) {
         { status: 403 }
       );
                   
-
     const db = await connect();
     const data = await req.json();
 
@@ -46,44 +45,49 @@ export async function POST(req) {
 
     const collection = db.collection("formData");
 
-    const existingSubmissions = await collection.where("Email", "==", userEmail).get();
+    try {
+      await db.runTransaction(async (t) => {
+        const query = collection.where("Email", "==", userEmail);
+        const existingSubmissionsSnapshot = await t.get(query);
+        
+        const alreadySubmittedDept = existingSubmissionsSnapshot.docs.some(
+          (doc) => doc.data()?.Department === Department
+        );
 
-    const alreadySubmittedDept = existingSubmissions.docs.some(
-      (doc) => doc.data()?.Department === Department
-    );
+        if (alreadySubmittedDept) {
+          throw new Error(`You have already submitted an application for ${Department}`);
+        }
 
-    if (alreadySubmittedDept) {
+        if (existingSubmissionsSnapshot.size >= 2) {
+          throw new Error("Remember that you can only submit upto 2 unique applications");
+        }
+
+        const newDocRef = collection.doc();
+        t.set(newDocRef, {
+          ...formFields,
+          Department,
+          Questions,
+          Email: userEmail,
+          shortlisted: false,
+          createdAt: new Date(),
+        });
+      });
+
       return new Response(
         JSON.stringify({
-          message: `You have already submitted an application for ${Department}`,
+          message: "Form submitted successfully!",
+        }),
+        { status: 200 }
+      );
+    } catch (txError) {
+      return new Response(
+        JSON.stringify({
+          message: txError.message,
         }),
         { status: 400 }
       );
     }
 
-    if (existingSubmissions.size >= 2) {
-      return new Response(
-        JSON.stringify({
-          message: "Remember that you can only submit upto 2 unique applications",
-        }),
-        { status: 400 }
-      );
-    }
-
-    await collection.add({
-      ...formFields,
-      Department,
-      Questions,
-      Email: userEmail,
-      createdAt: new Date(),
-    });
-
-    return new Response(
-      JSON.stringify({
-        message: "Form submitted successfully!",
-      }),
-      { status: 200 }
-    );
   } catch (error) {
     console.error("Form submission error:", error);
     return new Response(JSON.stringify({ message: "Error submitting form" }), {
