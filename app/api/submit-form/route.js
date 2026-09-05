@@ -118,7 +118,7 @@ export async function POST(req) {
 
     try {
       await db.runTransaction(async (t) => {
-        const query = collection.where("Email", "==", userEmail);
+        const query = collection.where("Email", "==", userEmail).select("Department");
         const existingSubmissionsSnapshot = await t.get(query);
 
         const alreadySubmittedDept = existingSubmissionsSnapshot.docs.some(

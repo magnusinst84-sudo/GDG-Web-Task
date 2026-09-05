@@ -42,6 +42,7 @@ export async function GET(request) {
       .collection("formData")
       .where("Email", "==", email)
       .where("Department", "==", department)
+      .select("Department")
       .get();
 
     const isSubmitted = snapshot.size > 0;

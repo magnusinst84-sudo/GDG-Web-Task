@@ -28,9 +28,11 @@ import {
 import { Input } from "@/components/ui/input";
 import PaginationComp from "./PaginationComp";
 import DialogComp from "./DialogComp";
-import MailComposer from "./MailComposer";
+import dynamic from "next/dynamic";
 import { CSVLink } from "react-csv";
 import { CSV_Header } from "@/constants";
+
+const MailComposer = dynamic(() => import("./MailComposer"), { ssr: false });
 
 const DataTable = ({ data }) => {
   const [tableData, setTableData] = useState(data);
@@ -280,13 +282,16 @@ const DataTable = ({ data }) => {
     return String(item.Questions);
   };
 
-  const csv_link = {
-    headers: CSV_Header,
-    data: tableData.map((item) => ({
-      ...item,
-      Questions: formatQuestionsForCsv(item),
-    })),
-  };
+  const csv_link = useMemo(
+    () => ({
+      headers: CSV_Header,
+      data: tableData.map((item) => ({
+        ...item,
+        Questions: formatQuestionsForCsv(item),
+      })),
+    }),
+    [tableData]
+  );
 
   return (
     <div className="bg-zinc-950 flex flex-col gap-3 p-4 rounded-xl border border-zinc-800/80 mt-5">

@@ -68,12 +68,13 @@ export async function PATCH(req, { params }) {
           },
         });
 
-        const updatedSnapshot = await docRef.get();
-
         const applicant = {
-            id: updatedSnapshot.id,
-            _id: updatedSnapshot.id,
-            ...serializeFirestoreData(updatedSnapshot.data()),
+            id: docSnapshot.id,
+            _id: docSnapshot.id,
+            ...serializeFirestoreData({
+              ...docSnapshot.data(),
+              shortlisted,
+            }),
         };
 
         return NextResponse.json({
