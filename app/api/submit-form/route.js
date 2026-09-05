@@ -19,7 +19,7 @@ export async function POST(req) {
     const user = session.user;
     const userEmail = user.email;
 
-    const deadline = new Date("2026-08-23T23:59:59+05:30");
+    const deadline = new Date("2026-12-31T23:59:59+05:30");
     if (new Date() > deadline)
       return new Response(
         JSON.stringify({
@@ -27,7 +27,7 @@ export async function POST(req) {
         }),
         { status: 403 }
       );
-                  
+
     const db = await connect();
     const data = await req.json();
 
@@ -49,7 +49,7 @@ export async function POST(req) {
       await db.runTransaction(async (t) => {
         const query = collection.where("Email", "==", userEmail);
         const existingSubmissionsSnapshot = await t.get(query);
-        
+
         const alreadySubmittedDept = existingSubmissionsSnapshot.docs.some(
           (doc) => doc.data()?.Department === Department
         );

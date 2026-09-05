@@ -56,500 +56,500 @@ export const LINKS = {
 // Department Details
 export const reviews = [
   {
-      id: "c21ca066-ab4d-40a3-943c-f170d6312bdc",
-      icon: ManageAccounts,
-      tone: "#8ab4f8",
-      name: "§_Mn9X7_qz",
-      description: "bp05Lb(bTI, CZWSr₹#^Z *7J ^T( f391xQ 1kp #q₹X 3z!Kux 6j(IkL.",
-    },
-    {
-      id: "4499a966-2740-4c36-88dd-8916a909fc77",
-      icon: Campaign,
-      tone: "#FF7A6B",
-      name: "¥_Pb!8Q_wk",
-      description: "oif 37ByD JahIXh — 79UzG, 31M^I & 7aF^1pkf0.",
-    },
-    {
-      id: "3936d5a2-acd9-4a98-ac97-42c2c92f5c02",
-      icon: ConnectWithoutContact,
-      tone: "#FFD45E",
-      name: "∆_Ot₹3W_vx",
-      description: "qi8qMnWmzP5h, 1kL1d3er & nUKpZg %AU0₹g!ir3C.",
-    },
-    {
-      id: "e2ed9c2c-c36c-457f-a8bb-cf2e8bc7c2e1",
-      icon: DesignServices,
-      tone: "#FF7A6B",
-      name: "ø_UxK2_mj",
-      description: "2dIf2%n5, ##*qF83I₹k & 6kz71p8pcA K7₹#87 ekeG.",
-    },
-    {
-      id: "d3beefc1-f8b0-4202-b26c-36e9804b6636",
-      icon: Palette,
-      tone: "#FFD45E",
-      name: "π_Ds9J8_tr",
-      description: "^48qNZaJ, 0i0j!n2 & x3% c$q*Bh $1J$^Ycn Qq AV( Z4lvA3p0co*(.",
-    },
-    {
-      id: "8143de1d-db17-42fa-958d-13b10804f894",
-      icon: Language,
-      tone: "#8AB4F8",
-      name: "µ_Wb₹5D_lp",
-      description: "!r9wz1 899%₹Gk3a, ZUVx-8vQUG %8m8 & VNz a!Lu CG5.",
-    },
-    {
-      id: "339f0f8a-72f2-44b9-92ab-2b0d4dcfa0f6",
-      icon: Mobile2,
-      tone: "#6EE7A0",
-      name: "∑_ApZ3V_gh",
-      description: "V1₹(oj( & Ne4my-p@3gozJ0 ZHM* UBJk EW9Hp1 & p₹f(jev.",
-    },
-    {
-      id: "9055864f-c7dc-44cd-91d5-8759d32a496a",
-      icon: SportsEsports,
-      tone: "#FF7A6B",
-      name: "Ω_GmF6X_ny",
-      description: "A%XSkat2 1VZor bQz1 iI#Q%, *9nvy & %1V 81P.",
-    },
-    {
-      id: "c0f3b1d1-ce05-45f6-9e34-ac9443fc5fcb",
-      icon: Analytics,
-      tone: "#8AB4F8",
-      name: "≈_DtB1S_zk",
-      description: "@m, N$hnqk9hk & g7#TkO 8MYYq x₹ %gx1j UPqD.",
-    },
-    {
-      id: "a1d920df-9eb9-49eb-b3a4-e4a3d1245ede",
-      icon: Cloud,
-      tone: "#FFD45E",
-      name: "∂_CdH4D_bv",
-      description: "Uu1rp Kyxlwv9Hf%WxFb, (pkJBJ*9!qS!rWs1, (t/q3 J$W38C3x1 & eR$8(%YXCt.",
-    },
-    {
-      id: "6a89c4e2-7b19-4f32-821e-9821a41b5201",
-      icon: Hub,
-      tone: "#FF7A6B",
-      name: "∫_BkY2C_xu",
-      description: "B3V!qkq@Ss8Se 7k70P9e, 80sDS rFM%M1kbR & K7P7 lBFE₹0vF#J1₹.",
-    },
-    {
-      id: "3e9ac635-01d4-495e-aa87-a7335a2403c2",
-      icon: Trophy,
-      tone: "#6EE7A0",
-      name: "≤_CpM8P_rw",
-      description: "#0Q, DmNOdq8S & bMTq%0hj T9Ep j6V3% z@8LFCwq7!.",
-    },
+    id: "c21ca066-ab4d-40a3-943c-f170d6312bdc",
+    icon: ManageAccounts,
+    tone: "#8ab4f8",
+    name: "Management",
+    description: "The backbone of the organization, turning vision into reality by planning, executing, and improvising. Oversees events, operations, and growth.",
+  },
+  {
+    id: "4499a966-2740-4c36-88dd-8916a909fc77",
+    icon: Campaign,
+    tone: "#FF7A6B",
+    name: "Publicity",
+    description: "Drives online presence with creative campaigns, video editing, and storytelling, boosting engagement and promoting events.",
+  },
+  {
+    id: "3936d5a2-acd9-4a98-ac97-42c2c92f5c02",
+    icon: ConnectWithoutContact,
+    tone: "#FFD45E",
+    name: "Outreach",
+    description: "Builds partnerships and expands outreach by connecting with communities, sponsors, and collaborators.",
+  },
+  {
+    id: "e2ed9c2c-c36c-457f-a8bb-cf2e8bc7c2e1",
+    icon: DesignServices,
+    tone: "#FF7A6B",
+    name: "UI/UX",
+    description: "Designs visually appealing, user-friendly digital interfaces with a focus on accessibility, usability, and aesthetics.",
+  },
+  {
+    id: "d3beefc1-f8b0-4202-b26c-36e9804b6636",
+    icon: Palette,
+    tone: "#FFD45E",
+    name: "Creatives / Design",
+    description: "Creates stunning visuals, event posters, and branding materials that capture the organization's identity.",
+  },
+  {
+    id: "8143de1d-db17-42fa-958d-13b10804f894",
+    icon: Language,
+    tone: "#8AB4F8",
+    name: "Web Dev",
+    description: "Designs, develops, and maintains responsive, high-performance websites for projects and events using modern web technologies.",
+  },
+  {
+    id: "339f0f8a-72f2-44b9-92ab-2b0d4dcfa0f6",
+    icon: Mobile2,
+    tone: "#6EE7A0",
+    name: "App Dev",
+    description: "Builds intuitive, impactful mobile applications, improving accessibility and interaction for members and event participants.",
+  },
+  {
+    id: "9055864f-c7dc-44cd-91d5-8759d32a496a",
+    icon: SportsEsports,
+    tone: "#FF7A6B",
+    name: "Game Dev",
+    description: "Combines creativity and technical skills to design engaging, entertaining games with real-world tools and production workflows.",
+  },
+  {
+    id: "c0f3b1d1-ce05-45f6-9e34-ac9443fc5fcb",
+    icon: Analytics,
+    tone: "#8AB4F8",
+    name: "Data Science",
+    description: "Applies AI, machine learning, and analytics to transform data into actionable insights and solve complex problems.",
+  },
+  {
+    id: "a1d920df-9eb9-49eb-b3a4-e4a3d1245ede",
+    icon: Cloud,
+    tone: "#FFD45E",
+    name: "Cloud & DevOps",
+    description: "Explores cloud computing, infrastructure, containerization, CI/CD pipelines, and automation by building scalable applications.",
+  },
+  {
+    id: "6a89c4e2-7b19-4f32-821e-9821a41b5201",
+    icon: Hub,
+    tone: "#FF7A6B",
+    name: "Blockchain",
+    description: "Explores decentralized apps, smart contracts, and Web3 development, giving members hands-on experience with protocols.",
+  },
+  {
+    id: "3e9ac635-01d4-495e-aa87-a7335a2403c2",
+    icon: Trophy,
+    tone: "#6EE7A0",
+    name: "Competitive Programming",
+    description: "Promotes problem-solving skills through coding contests, hackathons, and peer learning to sharpen algorithms and logic.",
+  },
 ];
 
 // Questionnaire Data
 export const QuestionnaireData = [
   {
-    department: "∑_ApZ3V_gh",
+    department: "Management",
     questions: [
       {
-        name: "poAx ZQPF iL0C *$ Peq# 2qu43N8V0TC8 c3^ pKl1ypL *D@DRew tB Dm2 pwS#kXdV5XM?",
-        type: "generic",
-        placeholder: "oN$5c *^fu lqx67xsv Djo Uz Zfa0R q0x (NJ(O6Pi3x(."
-      },
-      {
-        name: "ixVI V4 gN8 ^*2R 5w900Q@ ₹$n q!o$ M$I7 @^p? b3 %V*G C8U3 t9xB FC1$ 9Lu, MDB0 PJn4 ₹z g₹xR e10xJ qQ^83dM?",
+        name: "You are helping organize a college event, but two important tasks are delayed and the deadline is approaching. How would you handle the situation and make sure the event stays on track?",
         type: "long-text",
-        placeholder: "0nx0JW(2 XNJ9 9tw$ z@z%kUk 47 drBCnh0 kQ(M! !W₹xlqG."
+        placeholder: "Describe your approach..."
       },
       {
-        name: "QeV @e KzA #₹*6Bp zzV₹e hmw9 00!$PxK C4 OuO**Y3 e* ^e2 zLYcZmx9011 l*Hk6%RYv0y $k6#1#vQ8 RfB blv?",
-        type: "generic",
-        placeholder: "F.$., 8gI4Q$, j7cR, CWC(xm8CsG9!id37z, s7z%, (4@."
-      },
-      {
-        name: "zpfb 0P $8E iEab$UB80% NhFbK$@ p lfxzYJx# qww 0Viq7RSl e8s ! uG0q-!3v^ z5vFxH1f?",
-        type: "generic",
-        placeholder: "0818%*c 6B3 #ZkjRc(x8M* xe HupbF6qTNx$C *Z2 Q1s 27G!p."
-      },
-      {
-        name: "bK Zif# UA0 iP*wq li 61$ 7(z2!J8f kL₹ K@k!AbO PE # 1kEv uu3#^g, **0# A7 7u7G 4@#9k dx@B9WcKx eCrN?",
+        name: "Imagine you are coordinating a team where different members have different opinions about how an event should be conducted. How would you reach a decision that works for the team?",
         type: "long-text",
-        placeholder: "h0YJWzc $ZDz ₹8GIK@R%Y 3bqYLUx#(0*."
+        placeholder: "Explain how you would handle it..."
+      },
+      {
+        name: "An event has a limited budget, but the team wants to provide a good experience for participants. How would you prioritize the available resources?",
+        type: "long-text",
+        placeholder: "Describe your priorities..."
+      },
+      {
+        name: "You are responsible for an event and something unexpected goes wrong on the day of the event. What would be your immediate approach to solving the problem while keeping the team calm?",
+        type: "long-text",
+        placeholder: "Walk us through your approach..."
+      },
+      {
+        name: "Tell us about a time when you took responsibility for organizing, coordinating, or leading something. What was your role, and what did you learn from the experience?",
+        type: "long-text",
+        placeholder: "Tell us about your experience..."
       }
     ],
   },
   {
-    department: "∫_BkY2C_xu",
+    department: "Publicity",
     questions: [
       {
-        name: "$nX EV T!Q y7I^ 3P qmro tTx ^7rkyz9j8f *VmrS0L3H(, %x$ qk7E ms 3fo Ucl1 3z l9sa0 vq 42r0*T₹Km#?",
+        name: "Imagine GDG VITC is hosting a technical event and registrations are lower than expected. What kind of publicity strategy would you use to increase participation?",
         type: "long-text",
-        placeholder: "G#lE(#9 tK^d D#7TS8o$DM, SEZn R3HT6d5K kz Rk5 Z$DJZ@0!cS, 3eE %$U A53 yR3P hq ioW8UIo^!U."
+        placeholder: "Describe your campaign idea..."
       },
       {
-        name: "cA7b 13 Rd3oW d 8k₹$H8q, 4lBd8, yu A#q2$6%Jy! 12Im #M1k J!v@!hWpT (X*w ^FZEux3-obkA!#p Pv xPD^q6PH 1Q@1ea.",
+        name: "If you had to promote a technical workshop to students who know very little about the topic, how would you create content that makes them interested in attending?",
         type: "long-text",
-        placeholder: "*N7Ebqbr s%60 pz^#, #po 12c#E@fBv2 5ck cR5Q₹, !W0 ek#I $SG w%1#u9C."
+        placeholder: "Describe the content you would create..."
       },
       {
-        name: "wyRy8T 9$uf8W$ %Jg",
-        type: "short-text",
-        placeholder: "^Mua-#U5pkk8-$%8"
-      },
-      {
-        name: "e8 xmi##vB3, M₹S₹ #sOK u0 xkqq*nseYRO 9TyxI 6AY SI6( w3 PzvB 0z JK ^XS wE%f$₹nwCC 80₹R7pJqD#?",
+        name: "Which social media platform would you prioritize for promoting a college technical community, and what type of content would you create for it?",
         type: "long-text",
-        placeholder: "lBVmBT9Z Kq₹0xO# L^N8L$(7j, AKlIPlF7*3, am9."
+        placeholder: "Explain your choice..."
       }
     ],
   },
   {
-    department: "∂_CdH4D_bv",
+    department: "Outreach",
     questions: [
       {
-        name: "PRTFk( 98*XJKq xW*",
-        type: "short-text",
-        placeholder: "B(3w-fhpk3ON-!Z^"
-      },
-      {
-        name: "Mus9 GRiYd3S p₹WzKOC1V^ F@2 UOwYn098k x5d *7a B$t9^^P# Uofa?",
-        type: "generic",
-        placeholder: "1.(. C₹3i.oU, g8$RzNC, njN300, yB$18S8z#3, YFpM@7#, KIWXk, 93z."
-      },
-      {
-        name: "OXSON1z Z₹O Pe %2(% 37$kwYq $30b% 1kFxk70R, oa@x636Pu ₹1h 5(ce38qxkVDF, Xqp%q@ayU! p9$f(, H5V 0Oed9 8₹zV* 1i L0*09C9f 8Snu.",
+        name: "Suppose you need to approach a company for sponsorship for a college technical event. How would you introduce the event and communicate why the company should partner with you?",
         type: "long-text",
-        placeholder: "(zR7#Jp0 i3o#Ofq e1*f1h*kUbB!, r$( FJf$PHqywY, 6ul (9xXog(38 #1lk^bwK!ZF."
+        placeholder: "Write your approach..."
       },
       {
-        name: "lf(x !v63@$2x / xQg₹7B9uq 7wk y8@ 829l6Nkx 1₹1Q 4@(w0dU kF wgYPo1 c₹0 7kJfxBkB0!?",
+        name: "A potential sponsor is interested but asks what value they would receive from supporting the event. What would you offer them?",
         type: "long-text",
-        placeholder: "J.U. Q(#1dB, x@8EtEQqxx, 3*9, jQ^, AL3093 KE#TkZN, *7Z3R01u6, fz2*a, NYA."
+        placeholder: "Describe the value you would provide..."
+      },
+      {
+        name: "How would you approach another college technical community to establish a collaboration with GDG VITC?",
+        type: "long-text",
+        placeholder: "Explain how you would initiate the collaboration..."
+      },
+      {
+        name: "Imagine a company or community you contacted does not respond to your initial message. How would you follow up professionally without being intrusive?",
+        type: "long-text",
+        placeholder: "Describe your follow-up strategy..."
+      },
+      {
+        name: "What qualities do you think are important when representing a technical community while communicating with external organizations?",
+        type: "long-text",
+        placeholder: "Explain your answer..."
       }
     ],
   },
   {
-    department: "≤_CpM8P_rw",
+    department: "UI/UX",
     questions: [
       {
-        name: "kWgKYq4y Kc##₹d6 ^8xR",
-        type: "short-text",
-        placeholder: "(*u%f!AW"
-      },
-      {
-        name: "xGezX4l! p3T^G7@ xlEw",
-        type: "short-text",
-        placeholder: "9S@kX2(r"
-      },
-      {
-        name: "G@iMo8TB29 80Lz9xM tE93",
-        type: "short-text",
-        placeholder: "8z5#R@s%"
-      },
-      {
-        name: "VkvoO 6w2q0Vql5 (1(t49 DEkN!3H3j)",
-        type: "short-text",
-        placeholder: ""
-      },
-      {
-        name: "!kD7F7397kW iOBy q^:",
-        type: "generic",
-        placeholder: "5z@p^0L1tD MBi / xm#(i@k3 / OqMQ@0 y9 j@"
-      },
-      {
-        name: "0rS0 N0 F!1 mA36x@ 11 F1eg P8 372₹h 3$k* rfv# D#EPk32%ER Nw315x %e₹z KoQH SBpQ?",
+        name: "What is the difference between UI design and UX design? Give an example of how they work together in a website or application.",
         type: "long-text",
-        placeholder: "yqN7E3x₹ dJzf ZfC xb%q 19 tJ*x 0* xxh(^"
+        placeholder: "Explain with an example..."
+      },
+      {
+        name: "You are designing a website for students who need to find information quickly. What factors would you consider when designing the navigation?",
+        type: "long-text",
+        placeholder: "Describe your design considerations..."
+      },
+      {
+        name: "How would you approach designing a responsive interface that works well on both mobile phones and desktop screens?",
+        type: "long-text",
+        placeholder: "Describe your approach..."
+      },
+      {
+        name: "A user tells you that a website is difficult to use, but cannot explain exactly why. How would you identify the usability problems?",
+        type: "long-text",
+        placeholder: "Explain your process..."
+      },
+      {
+        name: "What is a wireframe, and how does it help during the design process?",
+        type: "long-text",
+        placeholder: "Explain in your own words..."
+      },
+      {
+        name: "Imagine you have to redesign the registration page for a college event. What information would you prioritize and how would you structure the page?",
+        type: "long-text",
+        placeholder: "Describe your proposed layout..."
+      },
+      {
+        name: "How do typography, spacing, contrast, and visual hierarchy affect the usability of an interface?",
+        type: "long-text",
+        placeholder: "Explain your understanding..."
+      },
+      {
+        name: "Two members of your team disagree strongly about a design decision. How would you decide which design is better?",
+        type: "long-text",
+        placeholder: "Describe how you would evaluate the designs..."
+      },
+      {
+        name: "What tools have you used or explored for UI/UX design, and what have you created with them?",
+        type: "long-text",
+        placeholder: "Tell us about your tools and projects..."
+      },
+      {
+        name: "Pick an application or website you use frequently. What is one UX problem you would improve, and how would you redesign it?",
+        type: "long-text",
+        placeholder: "Describe the problem and your solution..."
       }
     ],
   },
   {
-    department: "≈_DtB1S_zk",
+    department: "Creatives / Design",
     questions: [
       {
-        name: "9JS7 0U qm#!g c1hCLiad.",
-        type: "generic",
-        placeholder: "BEXlli₹yM W#sizqTJ m8 #–5 iPlST^LQR, 14Z0$37R3 sq*q Vy8dyYud9, *6TWVX, m7e 7hB9ka$₹XNtK."
-      },
-      {
-        name: "eu9 1k Iw! vnNJ P^ 569₹ Yy8 zxGc !1kXanX %nSV?",
-        type: "generic",
-        placeholder: "Pej₹ 19 K6#z bhPeL1G8s C0E (# 29t6 3xa J3#8 !5n Pj(q 7K2 JJ1! Fw (1uvtjx9a(."
-      },
-      {
-        name: "P1R4 Ct g125 qO12bLL?",
-        type: "generic",
-        placeholder: "3IIX#ks zza2 NWCkQjE cx 9cHx 6c₹ zrqK#."
-      },
-      {
-        name: "Peyo wwEaio 970AUxL%3 kz k77zK 4Q8* Ek% YXz₹ Moi !6AM xMqh$I5 RH 3z8YwV1 gqofqm@h?",
-        type: "short-text",
-        placeholder: "y.S. AjLqx, RnYlJt, XV0C8!-YqRkO, 1EB91Uz"
-      },
-      {
-        name: "H30x m7s zoR(k9 wz H1J qw9! zqz1vZq, 0q, 9E W*5bq(o AHSp#0qE !r!m(n(? w01QaI2 NkFz(i% I^R.",
+        name: "What makes a poster visually effective, especially when it needs to communicate information quickly to college students?",
         type: "long-text",
-        placeholder: "DSuayu3q 9N7 nW2C$R0, Z%m$ axzutk0d, 9O₹^ 7w0RmPlsRX48, 977 k67 ₹8MrXxH."
+        placeholder: "Explain your design thinking..."
       },
       {
-        name: "A@ (8V 7gxb H f$#(Ci k^uDIJ8? lDOBO 6q1 xj@Wwqx E%M@, mJp#o%.",
-        type: "short-text",
-        placeholder: "H6Ss-IA18*rF-@q0"
-      },
-      {
-        name: "$U1x %xD c$#x 91(C30? nR 73J, qt3n pu9z aLE jfx₹? WdjYx qW*b wqFJx7 urMJz8I, aGlNXu.",
+        name: "Suppose you are designing a poster for a technical workshop. How would you decide the typography, layout, imagery, and color palette?",
         type: "long-text",
-        placeholder: "Q0HXN %h1$ 3x31FS dMan7fO q4 xdrU"
+        placeholder: "Describe your design process..."
+      },
+      {
+        name: "What is the difference between a good-looking design and an effective design?",
+        type: "long-text",
+        placeholder: "Explain your perspective..."
+      },
+      {
+        name: "If you are given an existing design and asked to make it more visually appealing without changing its core message, what would you improve?",
+        type: "long-text",
+        placeholder: "Describe the changes you would make..."
+      },
+      {
+        name: "Which design tools have you used, and what kind of work have you created using them?",
+        type: "long-text",
+        placeholder: "Tell us about your experience..."
+      },
+      {
+        name: "Imagine GDG VITC needs a consistent visual identity across posters, social media posts, certificates, and event banners. How would you maintain that consistency?",
+        type: "long-text",
+        placeholder: "Describe your approach..."
       }
     ],
   },
   {
-    department: "π_Ds9J8_tr",
+    department: "Web Dev",
     questions: [
       {
-        name: "8!g( m(8 qgK DBkJvIC5₹A Bu Ky7xCa?",
+        name: "Describe a web project you have worked on. What technologies did you use, what was your role, and what was the biggest challenge you faced?",
         type: "long-text",
-        placeholder: "sH8(₹9G 7g^9 L9fKU₹l 5Kg tkX₹%3(2 aO tuj(#W"
+        placeholder: "Tell us about your project..."
       },
       {
-        name: "G%#₹k JfBiEF Kz1%k %w^ bkN Zj7mj23$0₹h x!nz?",
-        type: "short-text",
-        placeholder: "J.U. Sb5c39@96, 38PyT₹Ml*T(, t#b^t"
+        name: "The statement \"it works on my machine\" is a red flag in team development. What concrete habits or setup choices would you use to make sure your code works reliably in other developers' environments?",
+        type: "long-text",
+        placeholder: "Explain your approach..."
       },
       {
-        name: "z3408 r₹Q#R OA$ tvi$R3z BX kuqh $W%t 7Or! 79 N(@.",
-        type: "short-text",
-        placeholder: "SiMP2E!%a 8V me*F3 pX#z"
+        name: "How would you approach building a responsive website that works well across different screen sizes and devices?",
+        type: "long-text",
+        placeholder: "Describe your approach..."
       },
       {
-        name: "VI4 cC4 (zcH9848B35 *zkSzC*T 4q7h *fyGky 7K3$3?",
-        type: "generic",
-        placeholder: "t9O / $a qxI MpxC@ qqn$^31vd78"
+        name: "A website you developed suddenly becomes very slow after adding several new features. How would you investigate and improve its performance?",
+        type: "long-text",
+        placeholder: "Walk us through your debugging process..."
       },
       {
-        name: "SKl V78# WJx9 %S3 zEM T₹kwN HF lom@Y! Av!! qtq@?",
-        type: "generic",
-        placeholder: "₹kbm₹EZ$ O3v0V z₹b ₹4er"
+        name: "How would you structure a frontend project so that its components remain reusable and maintainable as the project grows?",
+        type: "long-text",
+        placeholder: "Describe your project structure..."
       },
       {
-        name: "vOky 0W₹ rFx8z0 c6 zxjxH₹0, 8i3Th3M vc 88n!q*r9 qnJ$Z(?",
-        type: "generic",
-        placeholder: "8vdxd3# kSNvTZ7D f6gRXojN ^Sv4"
+        name: "What web technologies or frameworks are you currently learning, and what would you like to build using them?",
+        type: "long-text",
+        placeholder: "Tell us what you are learning..."
+      },
+      {
+        name: "Suppose a user reports a bug that you cannot reproduce on your own computer. What steps would you take to identify and fix it?",
+        type: "long-text",
+        placeholder: "Describe your debugging strategy..."
+      },
+      {
+        name: "If you were asked to build a website for GDG VITC, what would you build and what features would you consider most useful for students?",
+        type: "long-text",
+        placeholder: "Describe your idea..."
       }
     ],
   },
   {
-    department: "Ω_GmF6X_ny",
+    department: "App Dev",
     questions: [
       {
-        name: "xx xk^ izYq Y*A (EvkBvp1TF *0l# 0My 3$5Z $CyC₹87? 61 Nz, 2^9qw 8pL?",
-        type: "short-text",
-        placeholder: "u.z. I7m11, sQ@@x, i%5MNz 0w%KUz"
-      },
-      {
-        name: "qc Kxx fzWD Hf1 It5@G KAZ78Kx K8Nxz999?",
-        type: "generic",
-        placeholder: "06jxqpZc 1Mj WXQOk w9h* t8I #jB*uRgO"
-      },
-      {
-        name: "26r 9qz RUX ₹l@1%0 w831 !O0$WKlS87?",
+        name: "Describe a mobile application you have built or worked on. What technologies did you use, and what was your contribution?",
         type: "long-text",
-        placeholder: "*rSXq13 vqq1 7#xqngT3kX"
+        placeholder: "Tell us about your application..."
       },
       {
-        name: "5P7# ₹K xzX eaSEqw 8O Pqv*s l9 m#OF *i@L #qF1 9c₹cnQ83V7 $b6pi3 0D10 hZeB#k?",
+        name: "How would you design an application that needs to work reliably even when the user's internet connection is slow or temporarily unavailable?",
         type: "long-text",
-        placeholder: "uY3v9%^C k0OX x@1 LAYS$H pN MxfY% (z NWG!"
+        placeholder: "Describe your approach..."
       },
       {
-        name: "!$9F 3^%* 3l@h(LA₹0 0%ye F%* ^ !r$k$*ko M7J fHn1aVp kk6 acxGzZ0xqS8",
+        name: "What is the difference between native and cross-platform app development? What factors would influence your choice between them?",
         type: "long-text",
-        placeholder: "^18* VD iz^T 3yv srNY1vd64#N ^qJn₹0VL"
+        placeholder: "Explain your reasoning..."
       },
       {
-        name: "S( 9B1 CHER 5^8 8mD#s e9 $3@qE *b1 ( HAPu Q1D $t9^X jDNT l1 5j0₹?",
+        name: "Suppose an application is consuming too much battery and becoming slow on a user's device. How would you investigate the problem?",
         type: "long-text",
-        placeholder: "C73w*khz X*jq vssWK Z6 vUcq@"
+        placeholder: "Describe your debugging process..."
       },
       {
-        name: "1^3mo X@*9zF z6 z%x^ Cf*As%AkjxH eLf 9JK i#x8tVbjx8 FP? (0FexKqE0zbk, j$d, %9s1X W738^k, jzx)",
-        type: "generic",
-        placeholder: "6gz!J12JZ*h, 7^^, *Mv80 $t$BY@, Wmz."
+        name: "What mobile development technologies are you currently learning, and what kind of application would you like to build with them?",
+        type: "long-text",
+        placeholder: "Tell us about your interests..."
       }
     ],
   },
   {
-    department: "§_Mn9X7_qz",
+    department: "Game Dev",
     questions: [
       {
-        name: "E98 W0 nm^$ 8k7Xp ekH, !kI06TSC g^B(WhH^ Jf0Dt1J.",
-        type: "generic",
-        placeholder: "6-4 B1ZRaFzQh"
-      },
-      {
-        name: "#g5em#%r XrZ zQzG *9oi3Fl R8g QXDxq ZI34y2D7 34FtFKQI Ek zkNX uk^k ₹B ^dp86 3₹ q*B5bL₹ y0 gnzQ8B.",
-        type: "generic",
-        placeholder: "1I9k o9k ₹kEwPGBu #z W4zKQ VrI2BUH*$W"
-      },
-      {
-        name: "%3e2’0 7(h @8JBc 99rlcFdf8 55QzU pzHL7FpX vVV7 j!C 3FSu, E9 $Tt3Qd YqtS ZI2a z61 W!kO%?",
-        type: "generic",
-        placeholder: "r0FAv 4g S1MJDW7YaOk"
-      },
-      {
-        name: "7$R8x ikZ1l y4b 7N6*7%j^ kz60h (!9xB M8mAb9* xP a3#TBqq₹E M9TcztQ) 9cq x4fzq3F 1^sqW (H7xj 7Zm(x*5c TD2j1870k@ K1x48R^, 8₹1TDra3 88UZnZuV#9#!, #$ xVtM0G *E%%N%z). *PjHH *6t$tHK1G%D Kw1b *7 c8*Cq71M0b 0xz 9UN NRRt $0S2xPq8jb$ CE*m#@%2, LJc FUR?",
+        name: "Describe a game you have created or worked on. What game engine or technologies did you use, and what was your role?",
         type: "long-text",
-        placeholder: "3T@urAh 8Cb!C (R*8y1PY2!1 i7g8 tq@ qkz10h F₹Xq $3Q 3C9"
+        placeholder: "Tell us about your game..."
       },
       {
-        name: "hY’Y 1 ck 3^8 WUjvh CXpEz9 W OjHo% A8Y8$, T8₹ 7 zQjdT4s4 JU69 (N.S., PqNS# 43yVHszH7q, ptG3qw0 KD(L, 5Q M8kT-V₹mxj1 f$CzJz LBSFAj) Fi GhDVq 8%^chxx. $k7 47Fq 3K*Y 1 M$DQ3fQy#3 4r3 @Yt hfqd Hxb. q@! kZ uc7 %@uf0s 9j% du30 5 ₹0(Lz?",
+        name: "What makes a game enjoyable beyond simply having good graphics?",
         type: "long-text",
-        placeholder: "yr*eA6 rLpP tCz$kI9C* N7x9y1Ls qt0 Urn9 4vWr₹*v$aa RqTzYP@0"
+        placeholder: "Explain your perspective..."
+      },
+      {
+        name: "How would you design the core gameplay loop for a simple game intended to keep players engaged?",
+        type: "long-text",
+        placeholder: "Describe your game design..."
+      },
+      {
+        name: "Suppose your game runs smoothly in the editor but experiences significant frame drops on a real device. How would you investigate the problem?",
+        type: "long-text",
+        placeholder: "Explain your debugging process..."
+      },
+      {
+        name: "What is the role of physics, collision detection, and game state management in a typical game?",
+        type: "long-text",
+        placeholder: "Explain your understanding..."
+      },
+      {
+        name: "Which game-development tools or engines have you explored, such as Unity, Godot, Unreal Engine, or others? What have you built with them?",
+        type: "long-text",
+        placeholder: "Tell us about your experience..."
+      },
+      {
+        name: "If GDG VITC asked you to build a small game for an event, what would you make and why would students enjoy playing it?",
+        type: "long-text",
+        placeholder: "Describe your game idea..."
       }
     ],
   },
   {
-    department: "∆_Ot₹3W_vx",
+    department: "Data Science",
     questions: [
       {
-        name: "R#w 1S h7@ @Rw8 ox c!#9 F!KMeV92?",
-        type: "generic",
-        placeholder: "3-8 r@SNqaPP₹"
-      },
-      {
-        name: "Azx co%u! kV%671 g% L79 x₹0(. XCO h3y1dC% 3sz %@D4g@vg1. 1kz% Np38G WLX x₹?",
-        type: "generic",
-        placeholder: "@QdqB!mv xDvK N₹*6(O (n₹y 7aeJ8 OWb89vp@"
-      },
-      {
-        name: "9biYv tx QzN4 h$m SMO3 Lq$3 r2 LnYQkWWF. l^EFL6P( Cz %K^ 11 zLzBBZ rl qwsGf.",
+        name: "What is the difference between data analysis, machine learning, and artificial intelligence?",
         type: "long-text",
-        placeholder: "703 v₹9$WI as Y8LaG8 #!H JUvu BSCJ$ i@Qv%zSuK7?"
+        placeholder: "Explain the differences..."
       },
       {
-        name: "₹ZMz ne mvC t0lx! #(z 3a% h%e5 itTk8!Rm$ 0Z₹4DV *8 0llUylg8 7q1U6 Wx0X*!D*V/ma$*e(C9/kM8#@jl 3 I3ZQ58M#7 (@a!e01/U%0qNqB?",
+        name: "You receive a dataset containing missing values, duplicate records, and inconsistent formats. What steps would you take before analyzing it?",
         type: "long-text",
-        placeholder: "!₹# aD9x!X gY2 qM#Xv₹Qvk GoTo0%N$ s#3*v₹W%sov!6"
+        placeholder: "Describe your preprocessing steps..."
       },
       {
-        name: "pS MH* eedj ikY pBt!7t*m x^kBVjYW28 jl *8Mv x!zx7 zx tL3hK%XUxxPBp, 6ObP*jk10Py, LfmkqGQL %7f.?",
-        type: "generic",
-        placeholder: "kwr7S7a %P%^$7h0 !7m%6 3f#1kxg9aY"
+        name: "What is the difference between supervised and unsupervised learning? Give an example of each.",
+        type: "long-text",
+        placeholder: "Explain with examples..."
+      },
+      {
+        name: "Suppose you train a machine-learning model that performs extremely well on the training data but poorly on new data. What might be happening, and how would you address it?",
+        type: "long-text",
+        placeholder: "Explain the problem and solution..."
+      },
+      {
+        name: "How would you decide which features to use when building a machine-learning model?",
+        type: "long-text",
+        placeholder: "Describe your approach..."
+      },
+      {
+        name: "Which programming languages, libraries, or tools have you used for data science or machine learning, and what have you built with them?",
+        type: "long-text",
+        placeholder: "Tell us about your experience..."
+      },
+      {
+        name: "Imagine GDG VITC has registration data from several events. What useful insights could you extract from that data to help organize future events?",
+        type: "long-text",
+        placeholder: "Describe the insights you would look for..."
       }
     ],
   },
   {
-    department: "¥_Pb!8Q_wk",
+    department: "Cloud & DevOps",
     questions: [
       {
-        name: "g@H Wxv v4₹ 8zd30#4b38 0* QGm ₹^ZRMVfx2 gsTzYGxtJD?",
-        type: "generic",
-        placeholder: "*Ep7QgT ₹X98 h7UY3kM₹TU"
+        name: "Explain what happens when you type a website's URL into your browser and press Enter. Describe the process at a high level.",
+        type: "long-text",
+        placeholder: "Explain the process..."
       },
       {
-        name: "P9 Z 91₹70 i9 6–9$, 3mB ^7HL #*8F jj2 S₹0 k18y₹!7 S7 lU02@vEW es !Ji kdT7Csn!a2R2?",
-        type: "short-text",
-        placeholder: "2-66"
+        name: "What problem does containerization solve, and why are tools such as Docker useful when developing and deploying applications?",
+        type: "long-text",
+        placeholder: "Explain in your own words..."
       },
       {
-        name: "kgE3z Ljz0 x7yYf3y*h 0Qo? (kE0lPt / gq-@0ZeL0, hn57* hk79c0x, k8p.)",
-        type: "generic",
-        placeholder: "zsCxHw / G0-c!!MLi, B97fR S!9STQG, AuB9eqq vxX(0ogh, 8ZH."
+        name: "Suppose an application works correctly during development but fails after being deployed to a server. How would you approach debugging the issue?",
+        type: "long-text",
+        placeholder: "Describe your debugging process..."
+      },
+      {
+        name: "What is CI/CD, and how could it improve the workflow of a team developing a web or mobile application?",
+        type: "long-text",
+        placeholder: "Explain with an example..."
       }
     ],
   },
   {
-    department: "ø_UxK2_mj",
+    department: "Blockchain",
     questions: [
       {
-        name: "kJ0k #q 4EqzQ #r^pAlwG.",
+        name: "What problem does blockchain technology attempt to solve, and how is it different from a traditional centralized database?",
         type: "long-text",
-        placeholder: "%T01 A21(, kfJZ9R, UxRS@6aSw, zc9 zl$8xxvp 2hx! k7z'c 5F@v 07 ax zj6j."
+        placeholder: "Explain your understanding..."
       },
       {
-        name: "q#x lr *C^ a3h3 %5 !9rx Zi# 70/hY $@p₹MBsWNz?",
+        name: "What is a smart contract? Give an example of a situation where a smart contract could be useful.",
         type: "long-text",
-        placeholder: "93(B 0GmLj$r7@ fyt o% Gd98? A3@₹ x0 qx0 @XvZ XM Pk40!, *eNxmj!Tq5, O6 E7Y9ik! zI ezXM 7k @YG H(9k?"
+        placeholder: "Explain with an example..."
       },
       {
-        name: "q387 3pn aOxq $N3ao r@3XUy?",
-        type: "short-text",
-        placeholder: "qOno!Zz (B5F7lxl b7Re %#z@yhW7(r @ag0 1x5kx."
-      },
-      {
-        name: "3rh38 %(%wo R457o8N^ 63lv R5t s0x7?",
-        type: "generic",
-        placeholder: "13jj#YEh: 9j$#FS, Mv(J IIy%XV, 1@@E6^20*q, 6ndhT@BS, k7^(kA7iSEv, Ps3claB4T, 6tBrH8 !d7JeDP."
-      },
-      {
-        name: "0dPr1 X b7e@ t! c1Kx ₹8^9m# igz$#3s*1 oZ jkGUHv i^85.",
-        type: "short-text",
-        placeholder: "RnM$F, @8ZfD89, w7DxWP8k, xzNiG8 1G4R3, pJ072#, Q*ID76zm exx*$ju, Md xE! 8B711 *H93%8^E."
-      },
-      {
-        name: "S9wK a5e Lu0VU$ 7₹ %@8 iOg!IM w!Kxb83 xDwIW7x 7y%S7g?",
-        type: "generic",
-        placeholder: "ZfNgWI* Z8n*hxw, 66Tz^G9%a, A@^HM7B##, ZB#luB$O zO181%k, qfbiOw, (qUYqr$O3 *h87x6, z@F."
-      },
-      {
-        name: "e% uCl'7O c₹EMkqmI z nhb($x 1qDF 8m!4 9LL'!F CV₹Mmx079L MPHb, ₹le^ X@@nY (y! gT?",
-        type: "generic",
-        placeholder: "4Q'% B₹3F 9h M#@k6izqc@ 0Ar^ JFz*Ph8b @₹ Uk^I7d38 ₹Yr 7*₹W2AQ zxrx9Tq."
-      },
-      {
-        name: "pVS x@Dm vkGWT jgo y3mm %8K jgp *@Hqq%#G*0#B !MxgP03K 1r #g/9k wTU7SV(1₹j?",
-        type: "short-text",
-        placeholder: "Qv9k2^L: (cKs HW0₹ 7, 7 Ix 4, 5 0T 5, X3 MrUj 2$b% 5 1#9qC."
-      },
-      {
-        name: "4qw z8t kvhDYs@R$sQ x83kx%198 GX99!6(^ #95 8lRZRqq8k Dy1i S^B9bbA $tLi5 s# @W?",
-        type: "short-text",
-        placeholder: "Df0, 0KvhRT!J, F$ 87."
-      },
-      {
-        name: "xm @0pxz dtl1qRQB @(qx 0Fr'S DB8K L* ^D D72n?",
+        name: "What is the difference between a cryptocurrency, a blockchain, and a decentralized application (dApp)?",
         type: "long-text",
-        placeholder: "ze$UDY8e."
+        placeholder: "Explain the differences..."
+      },
+      {
+        name: "Suppose you are developing a blockchain application and need to store a large amount of user data. Would you store everything directly on-chain? Explain your approach.",
+        type: "long-text",
+        placeholder: "Describe your architecture..."
       }
     ],
   },
   {
-    department: "µ_Wb₹5D_lp",
+    department: "Competitive Programming",
     questions: [
       {
-        name: "P9Q zH₹ L#@k0RW( 7 yAdh 1x 1 7*Omxs7Hm @Q3 5%37 9PmKG N21O eitxq( (s.q., w7ep.7t, d5x, qc93qv). Qd1 KSZ 1M 7qi3xPE (3!3R JyS%h55 m31o WYc ape* 3(iEQ9 nV5otX3Hu G^ TF!1o q^Y(P8xr #1 #3C!Qdc. w659 L@ %YVZ#72 IKXk D7@9( %8-kN9YXh ₹2*@9O nLrJ 1q rx733 zLq dqb2I M0*1 ₹1A%j ^%xsks 6gZzT!L$ P1o KU UzMHuk (^₹h C4fG^M%.",
+        name: "Given an array of integers, how would you find the largest and second-largest elements efficiently? What would be the time complexity?",
         type: "long-text",
-        placeholder: "$pAQ9v 1GK4 5*0W-7g-3bez 5iJ8₹N3^6 CBxU"
+        placeholder: "Explain your algorithm and complexity..."
       },
       {
-        name: "k7j LR \"it works on my machine\" a red flag in team development, and what concrete habits or setup choices do you use to ensure your code works on everyone else's environment too?",
-        type: "generic",
-        placeholder: "y7L0xkH 2s₹9!rN^0x4 9W(jqW3Im@s KC160Bfrh"
-      },
-      {
-        name: "Z (u₹zeu c7Hq48a k8!$ls 12 n 1N79-OOzl18F zIg 8C%* Q#X1FR8 483 YJqAC qr o3% 7X8Nq@ fv X eHq7. zo7v J8@H#c 8( 0yi4 1zW'b qjkm2₹V 9gksoJ8Iy, x8I C@oE P$f7xfx1 ox81₹Ma!Y F(x2U0eW zk0%O Fqa %UR ₹x kzZT M*₹ U7 zE%x@! 0v* eJw 783U#J Qk!9 iLyk936 k(fN7a3* Ezp yTtu4n?",
+        name: "What is the difference between an array, linked list, stack, and queue? Give one situation where each could be useful.",
         type: "long-text",
-        placeholder: "8.r. 1CY0Bl^XUN, 6y7a ^av^GM9z, 930xOl3IcN jli03q!"
+        placeholder: "Explain with examples..."
       },
       {
-        name: "V₹kLx 8AQ! G9*!A@q v1Kf1 1kb Y^4p !V3s$A! !8*xxzOk kISPY ₹G V fn* 0O$ uy503k v0^ *W*Szp^ Et(5gX. kb74SmK iYf$DD $7 1!Uqx 7xz 6yT0uiu03z wVb7xGN zP x!17sx% #110z (a$ya 9Bt, VM6, xT qhB yf₹TmND) D0D4 x₹XI 8btM 3z1i O5*p5UKe.",
+        name: "What is Big-O notation, and why is understanding time and space complexity important in competitive programming?",
         type: "long-text",
-        placeholder: "30U8b9V 19! tIpdE%, 736 8%%r₹(₹8M, LM#J ₹*x7qQ9, xwzsCbk^A, bsF."
+        placeholder: "Explain your understanding..."
       },
       {
-        name: "yi8gnK7 VJW9 ^Q9Oqo FsC7avP 0PA",
-        type: "short-text",
-        placeholder: "O(zM-AukE8VY-Jmk"
+        name: "Explain the difference between breadth-first search (BFS) and depth-first search (DFS). When would you prefer one over the other?",
+        type: "long-text",
+        placeholder: "Explain with examples..."
       },
       {
-        name: "UlTu 1nD*Y *h17 13AEe9qq CU#Ux7PY$ WWU%jYq 1Tp v**K3jb-^T7tCjS 8qbLk^VH N wLuyF3ly 18$0w K6 zV3g Gq233H9lPo D9fU eid(L gY10E qMK%hCmOD qM7x 8qp qOWFz k%gC qmW8uE?",
-        type: "generic",
-        placeholder: "8nj!Y7k zPAr 92x₹1C kA#%Z*b m9^ %uV!Cg7x"
+        name: "You are given a problem that can be solved using either brute force or a more optimized approach. How would you identify whether optimization is necessary and decide which approach to use?",
+        type: "long-text",
+        placeholder: "Describe your problem-solving process..."
       },
       {
-        name: "L8#6pkg₹ ^ s$e%38J(q q0@1Sux Cn* ^9@%ZddGKc3 Ys O1J IzfDmX0*V₹k zVB zay($( X*m K53mn03I 1₹Q89!b*#!Cm#h7 Lh!xw unZ E0b% 2^ 181ZE95$ li.",
-        type: "generic",
-        placeholder: "iW!Q%AzV Q0b txqbvx$, cWH0(1xAI2Ox5₹x QE1mz, $1T 4p7t*H4$^L"
-      },
-      {
-        name: "2#Y 73p₹xw kn qhP 77xDQWeB9 g*h?",
-        type: "short-text",
-        placeholder: "s^ %8zz(m!"
+        name: "Choose a programming language you are comfortable with for competitive programming. Explain why you prefer it and describe a problem you have solved using it.",
+        type: "long-text",
+        placeholder: "Tell us about your experience..."
       }
     ],
   },

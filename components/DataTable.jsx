@@ -344,7 +344,10 @@ const DataTable = ({ data }) => {
         />
         <FilterDepartment filterFunc={filterFunc} />
         <FilterShortlisted filterFunc={shortlistedFilterFunc} />
-        <DialogComp selectedApplicants={showRowData} />
+        <MailComposer
+          recipients={selectedFlatRows.length}
+          handleRowSelection={handleRowSelection}
+        />
         <Button onClick={() => window.location.reload()} className="flex gap-2">
           <GrPowerReset />
           Reset Filters

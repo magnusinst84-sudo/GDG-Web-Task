@@ -75,9 +75,8 @@ export default function MailComposer({ recipients, handleRowSelection }) {
             }),
         ],
         content: "",
-        onUpdate: () => {
-            setPayloadData( (prev) => ({ ...payloadData, body: editor.getHTML() }));
-            
+        onUpdate: ({ editor: currentEditor }) => {
+            setPayloadData((prev) => ({ ...prev, body: currentEditor.getHTML() }));
         },
         editorProps: {
             attributes: {
@@ -89,7 +88,7 @@ export default function MailComposer({ recipients, handleRowSelection }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">Custom Mail</Button>
+                <Button variant="outline" disabled={!recipients}>Send Email</Button>
             </DialogTrigger>
             <DialogContent
                 className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[75vw] overflow-x-hidden"
@@ -101,7 +100,7 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                         recipients.
                     </DialogDescription>
                 </DialogHeader>
-                {recipients !== 0 ? (
+                {recipients > 0 ? (
                     <div className="flex flex-col gap-3 justify-between">
                         <div className="flex flex-col gap-3">
                             <div className="flex gap-3 items-center justify-evenly">
