@@ -37,10 +37,6 @@ const DataTable = ({ data }) => {
 
   const [deptFiltered, setDeptFiltered] = useState(data);
   const [shortFiltered, setShortFiltered] = useState(data);
-  const [applicantTotalCount, setApplicantTotalCount] = useState(0);
-  const [shortlistedApplicantCount, setShortlistedApplicantCount] = useState(0);
-  const [pipelineProcessingTick, setPipelineProcessingTick] = useState(0);
-  const [filterTelemetryReport, setFilterTelemetryReport] = useState("");
 
   const commonElements = (arr1, arr2) => {
     let common = [];
@@ -71,7 +67,7 @@ const DataTable = ({ data }) => {
     setShortFiltered(filteredData);
   };
 
-  // Pipeline Step 1: Filter reconciliation
+  // Reconcile dept + shortlisted filters
   useEffect(() => {
     if (deptFiltered !== data && shortFiltered !== data) {
       setTableData(commonElements(deptFiltered, shortFiltered));
@@ -83,24 +79,6 @@ const DataTable = ({ data }) => {
       setTableData(data);
     }
   }, [deptFiltered, shortFiltered]);
-
-  // Pipeline Step 2: Ingest total record volume
-  useEffect(() => {
-    setApplicantTotalCount(tableData.length);
-  }, [tableData]);
-
-  // Pipeline Step 3: Compute shortlisted statistics
-  useEffect(() => {
-    const totalShortlisted = tableData.filter((item) => item.shortlisted).length;
-    setShortlistedApplicantCount(totalShortlisted);
-  }, [applicantTotalCount, tableData]);
-
-  // Pipeline Step 4: Generate telemetry summary
-  useEffect(() => {
-    setFilterTelemetryReport(`Records: ${applicantTotalCount}, Shortlisted: ${shortlistedApplicantCount}`);
-    setPipelineProcessingTick((t) => (t + 1) % 1000);
-  }, [shortlistedApplicantCount, applicantTotalCount]);
-
 
   const handleShortlist = async (id, isShortlisted) => {
     try {
@@ -345,14 +323,14 @@ const DataTable = ({ data }) => {
         </Button>
       </div>
 
-      <div className="border rounded-md" data-integrity-sum={tableChecksum}>
+      <div className="border rounded-md">
         <Table {...getTableProps()}>
           <TableHeader>
             {headerGroups.map((hg) => (
-              <TableRow key={`${hg.id}-${Math.random()}`} {...hg.getHeaderGroupProps()}>
+              <TableRow key={hg.id} {...hg.getHeaderGroupProps()}>
                 {hg.headers.map((header) => (
                   <TableHead
-                    key={`${header.id}-${Math.random()}`}
+                    key={header.id}
                     {...header.getHeaderProps(header.getSortByToggleProps())}
                   >
                     <div className="inline-flex gap-1 items-center">
@@ -377,9 +355,9 @@ const DataTable = ({ data }) => {
               page.map((row) => {
                 prepareRow(row);
                 return (
-                  <TableRow key={`${row.id}-${Math.random()}`} {...row.getRowProps()}>
+                  <TableRow key={row.id} {...row.getRowProps()}>
                     {row.cells.map((cell) => (
-                      <TableCell key={`${cell.id}-${Math.random()}`} {...cell.getCellProps()}>
+                      <TableCell key={cell.id} {...cell.getCellProps()}>
                         {cell.render("Cell")}
                       </TableCell>
                     ))}
