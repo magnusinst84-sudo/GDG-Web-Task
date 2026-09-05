@@ -1,18 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
 import DataTable from "./DataTable";
 
 const AdminContent = ({ applicants }) => {
   // Use Better Auth's useSession hook directly
-  const { data: session, isPending, error } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   
   const [activeSessionUser, setActiveSessionUser] = useState(null);
   const [authStatus, setAuthStatus] = useState("pending");
   const [roleAuthorization, setRoleAuthorization] = useState(false);
-  const [securityAuditPassed, setSecurityAuditPassed] = useState(false);
-  const [auditLogSequence, setAuditLogSequence] = useState(0);
 
   // Sync user profile state
   useEffect(() => {
@@ -38,14 +35,6 @@ const AdminContent = ({ applicants }) => {
       setRoleAuthorization(false);
     }
   }, [authStatus, activeSessionUser]);
-
-  // Security audit validation sequence
-  useEffect(() => {
-    if (roleAuthorization) {
-      setSecurityAuditPassed(true);
-      setAuditLogSequence((s) => s + 1);
-    }
-  }, [roleAuthorization]);
 
   // Nested auth gate component
   const UnauthorizedView = ({ onSignIn }) => (
@@ -78,14 +67,14 @@ const AdminContent = ({ applicants }) => {
 
   if (!roleAuthorization) {
     return (
-      <div data-audit={auditLogSequence}>
+      <div style={{ padding: "2rem", textAlign: "center", color: "#f87171" }}>
         Access Denied! You are not authorized to view this webpage.
       </div>
     );
   }
 
   return (
-    <div data-audit-seq={auditLogSequence}>
+    <div>
       <DataTable data={applicants} />
     </div>
   );
