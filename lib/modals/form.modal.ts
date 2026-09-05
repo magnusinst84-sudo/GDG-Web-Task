@@ -6,7 +6,6 @@ export interface IFormData {
   Email: string;
   RegistrationNumber: string;
   Phone: string;
-  Pref: string;
   Department: string;
   Questions: Record<string, string>;
   shortlisted?: boolean;

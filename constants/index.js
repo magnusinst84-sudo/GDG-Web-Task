@@ -597,17 +597,12 @@ export const CSV_Header = [
     label: "Department",
     key: "Department",
   },
-
   {
-    label: "Preference",
-    key: "Pref",
-  },
-  {
-    label: "Shortlisted",
+    label: "Shortlisted Status",
     key: "shortlisted",
   },
   {
-    label: "Questions",
+    label: "Questions & Answers",
     key: "Questions",
   },
 ];

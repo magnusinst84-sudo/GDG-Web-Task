@@ -136,7 +136,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   };
 
   questionData.forEach((qd) => {
-    schemaObj[qd] = z.string().optional();
+    schemaObj[qd] = z.string().trim().min(1, "Answer is required");
   });
 
   const formSchema = z.object(schemaObj);

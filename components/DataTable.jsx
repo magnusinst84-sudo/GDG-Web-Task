@@ -136,10 +136,6 @@ const DataTable = ({ data }) => {
         accessor: "Department",
       },
       {
-        Header: "Preference",
-        accessor: "Pref",
-      },
-      {
         Header: "Shortlisted",
         accessor: "shortlisted",
         Cell: ({ row }) => (
@@ -265,18 +261,18 @@ const DataTable = ({ data }) => {
           if (Array.isArray(entry)) return entry.join(": ");
           if (entry && typeof entry === "object") {
             return Object.entries(entry)
-              .map(([key, value]) => `${key}: ${value}`)
-              .join(" | ");
+              .map(([key, value]) => `Q: ${key}\nA: ${value}`)
+              .join("\n\n");
           }
           return String(entry ?? "");
         })
-        .join(" | ");
+        .join("\n\n");
     }
 
     if (typeof item.Questions === "object") {
       return Object.entries(item.Questions)
-        .map(([question, answer]) => `${question}: ${answer}`)
-        .join(" | ");
+        .map(([question, answer]) => `Q: ${question}\nA: ${answer}`)
+        .join("\n\n");
     }
 
     return String(item.Questions);

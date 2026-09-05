@@ -2,8 +2,15 @@ import { connect } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { QuestionnaireData } from "@/constants";
 
 export const dynamic = "force-dynamic";
+
+const normaliseQuestion = (question) => (
+  typeof question === "string"
+    ? { name: question, type: "generic", placeholder: "2-3 sentences" }
+    : question
+);
 
 const VALID_DEPARTMENTS = [
   "Management",
@@ -34,7 +41,7 @@ const submitFormSchema = z.object({
       message: `Department must be one of: ${VALID_DEPARTMENTS.join(", ")}`,
     }),
   }),
-  Questions: z.record(z.string(), z.string()).optional().default({}),
+  Questions: z.record(z.string(), z.string().trim().min(1, "All question answers must be non-empty")).optional().default({}),
 });
 
 export async function POST(req) {
@@ -112,6 +119,28 @@ export async function POST(req) {
     }
 
     const { Department, Questions, Name, RegistrationNumber, Phone, ["Year of Study"]: yearOfStudy } = parseResult.data;
+
+    const normalizeDeptName = (str) => (str ? str.trim().toLowerCase().replace(/\s*\/\s*/g, "/") : "");
+    const deptConfig = QuestionnaireData.find(
+      (item) => normalizeDeptName(item.department) === normalizeDeptName(Department)
+    );
+    const expectedQuestions = (deptConfig?.questions ?? []).map(normaliseQuestion).map((q) => q.name);
+
+    for (const qName of expectedQuestions) {
+      const answer = Questions?.[qName];
+      if (!answer || typeof answer !== "string" || answer.trim().length === 0) {
+        const errorMessage = `Validation failed: Answer is required for question "${qName}"`;
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: errorMessage,
+            error: errorMessage,
+            data: null,
+          }),
+          { status: 400 }
+        );
+      }
+    }
 
     const db = await connect();
     const collection = db.collection("formData");
