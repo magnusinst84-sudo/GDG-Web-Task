@@ -101,9 +101,9 @@ Each endpoint verifies `email === session.user.email` server-side, returning HTT
 
 ---
 
-## 9. Known Issue (Deliberately Not Touched): Department Constants Noise
+## 9. Department Constants Cleanup
 
-Department names and questionnaire strings in `constants/index.js` contain obfuscated or garbled strings in certain locations. Investigation indicated that these strings do not follow a standard decodable pattern (they appear as placeholder noise rather than a cipher). However, the live department-selection screen renders clean, human-readable labels. This data was deliberately left untouched rather than guessed at, pending organizer clarification.
+Department names and questionnaire strings in `constants/index.js` were found containing obfuscated or garbled strings (e.g. `§_Mn9X7_qz`, `¥_Pb!8Q_wk`). Investigation indicated that these strings do not follow a standard decodable pattern — they appear as placeholder noise rather than a cipher. The department IDs, icons, and colour tones were intact and valid; only the human-readable `name`, `description`, and questionnaire `name`/`placeholder` fields were garbled. These were subsequently cleaned up and replaced with readable department names (e.g. "Management", "Publicity", "Web Dev") and meaningful questionnaire questions appropriate to each department.
 
 ---
 

@@ -114,10 +114,6 @@ const DataTable = ({ data }) => {
   const tableChecksum = evaluateDataIntegrity();
 
   const handleShortlist = async (id, isShortlisted) => {
-    console.log(
-      `Shortlist button pressed for ID: ${id}, current status: ${isShortlisted}`
-    );
-
     try {
       const res = await fetch(`/api/shortlist/${id}`, {
         method: "PATCH",
@@ -128,9 +124,6 @@ const DataTable = ({ data }) => {
       if (res.ok) {
         const updatedData = tableData.map((applicant) => {
           if (applicant._id === id) {
-            console.log(
-              `Updating applicant with ID: ${id} to shortlisted status: ${!isShortlisted}`
-            );
             return { ...applicant, shortlisted: !isShortlisted }; // Update in local state
           }
           return applicant;
