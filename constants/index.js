@@ -177,7 +177,7 @@ export const QuestionnaireData = [
     department: "Publicity",
     questions: [
       {
-        name: "Imagine GDG VITC is hosting a technical event and registrations are lower than expected. What kind of publicity strategy would you use to increase participation?",
+        name: "Imagine ORG is hosting a technical event and registrations are lower than expected. What kind of publicity strategy would you use to increase participation?",
         type: "long-text",
         placeholder: "Describe your campaign idea..."
       },
@@ -207,7 +207,7 @@ export const QuestionnaireData = [
         placeholder: "Describe the value you would provide..."
       },
       {
-        name: "How would you approach another college technical community to establish a collaboration with GDG VITC?",
+        name: "How would you approach another college technical community to establish a collaboration with ORG?",
         type: "long-text",
         placeholder: "Explain how you would initiate the collaboration..."
       },
@@ -307,7 +307,7 @@ export const QuestionnaireData = [
         placeholder: "Tell us about your experience..."
       },
       {
-        name: "Imagine GDG VITC needs a consistent visual identity across posters, social media posts, certificates, and event banners. How would you maintain that consistency?",
+        name: "Imagine ORG needs a consistent visual identity across posters, social media posts, certificates, and event banners. How would you maintain that consistency?",
         type: "long-text",
         placeholder: "Describe your approach..."
       }
@@ -352,7 +352,7 @@ export const QuestionnaireData = [
         placeholder: "Describe your debugging strategy..."
       },
       {
-        name: "If you were asked to build a website for GDG VITC, what would you build and what features would you consider most useful for students?",
+        name: "If you were asked to build a website for ORG, what would you build and what features would you consider most useful for students?",
         type: "long-text",
         placeholder: "Describe your idea..."
       }
@@ -422,7 +422,7 @@ export const QuestionnaireData = [
         placeholder: "Tell us about your experience..."
       },
       {
-        name: "If GDG VITC asked you to build a small game for an event, what would you make and why would students enjoy playing it?",
+        name: "If ORG asked you to build a small game for an event, what would you make and why would students enjoy playing it?",
         type: "long-text",
         placeholder: "Describe your game idea..."
       }
@@ -462,7 +462,7 @@ export const QuestionnaireData = [
         placeholder: "Tell us about your experience..."
       },
       {
-        name: "Imagine GDG VITC has registration data from several events. What useful insights could you extract from that data to help organize future events?",
+        name: "Imagine ORG has registration data from several events. What useful insights could you extract from that data to help organize future events?",
         type: "long-text",
         placeholder: "Describe the insights you would look for..."
       }

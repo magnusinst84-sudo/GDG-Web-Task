@@ -1,8 +1,41 @@
 import { connect } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
+
+const VALID_DEPARTMENTS = [
+  "Management",
+  "Publicity",
+  "Outreach",
+  "UI/UX",
+  "Creatives / Design",
+  "Web Dev",
+  "App Dev",
+  "Game Dev",
+  "Data Science",
+  "Cloud & DevOps",
+  "Blockchain",
+  "Competitive Programming",
+];
+
+const submitFormSchema = z.object({
+  Name: z.string({ required_error: "Name is required" }).trim().min(1, "Name cannot be empty"),
+  RegistrationNumber: z
+    .string({ required_error: "RegistrationNumber is required" })
+    .trim()
+    .regex(/^\d{2}[A-Z]{3}\d{4}$/, "Registration number must be 2 numbers, 3 uppercase letters, and 4 numbers (e.g. 25BCE5612)"),
+  Phone: z.string({ required_error: "Phone is required" }).trim().min(1, "Phone cannot be empty"),
+  "Year of Study": z.string({ required_error: "Year of Study is required" }).trim().min(1, "Year of Study cannot be empty"),
+  Email: z.string().email("Invalid email format").optional().or(z.literal("")),
+  Department: z.enum(VALID_DEPARTMENTS, {
+    errorMap: () => ({
+      message: `Department must be one of: ${VALID_DEPARTMENTS.join(", ")}`,
+    }),
+  }),
+  Questions: z.record(z.string(), z.string()).optional().default({}),
+});
 
 export async function POST(req) {
   try {
@@ -46,24 +79,41 @@ export async function POST(req) {
       );
     }
 
-    const db = await connect();
-    const data = await req.json();
-
-    const { Department, Questions, ...formFields } = data;
-
-    const regNoRegex = /^\d{2}[A-Z]{3}\d{4}$/;
-    if (formFields.RegistrationNumber && !regNoRegex.test(formFields.RegistrationNumber)) {
+    let data;
+    try {
+      data = await req.json();
+    } catch {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Registration number must be 2 numbers, 3 uppercase letters, and 4 numbers (e.g. 25BCE5612)",
-          error: "Invalid Registration Number format",
+          message: "Invalid JSON in request body",
+          error: "Invalid JSON format",
           data: null,
         }),
         { status: 400 }
       );
     }
 
+    const parseResult = submitFormSchema.safeParse(data);
+    if (!parseResult.success) {
+      const issueMessages = parseResult.error.issues.map(
+        (issue) => `${issue.path.join(".") || "payload"}: ${issue.message}`
+      );
+      const errorMessage = `Validation failed: ${issueMessages.join("; ")}`;
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: errorMessage,
+          error: errorMessage,
+          data: null,
+        }),
+        { status: 400 }
+      );
+    }
+
+    const { Department, Questions, Name, RegistrationNumber, Phone, ["Year of Study"]: yearOfStudy } = parseResult.data;
+
+    const db = await connect();
     const collection = db.collection("formData");
 
     try {
@@ -85,9 +135,12 @@ export async function POST(req) {
 
         const newDocRef = collection.doc();
         t.set(newDocRef, {
-          ...formFields,
+          Name,
+          RegistrationNumber,
+          Phone,
+          "Year of Study": yearOfStudy,
           Department,
-          Questions,
+          Questions: Questions || {},
           Email: userEmail,
           shortlisted: false,
           createdAt: new Date(),
@@ -128,4 +181,3 @@ export async function POST(req) {
     );
   }
 }
-

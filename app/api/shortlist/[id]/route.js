@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import { connect, serializeFirestoreData } from '@/lib/db';
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { z } from "zod";
+import { logAuditEvent } from "@/lib/audit";
+
+const shortlistSchema = z.object({
+  shortlisted: z.boolean({
+    required_error: "Field 'shortlisted' is required",
+    invalid_type_error: "Field 'shortlisted' must be a boolean",
+  }),
+});
 
 export async function PATCH(req, { params }) {
     const session = await auth.api.getSession({
@@ -15,18 +24,23 @@ export async function PATCH(req, { params }) {
       );
     }
 
-    const db = await connect();
-
-    const { id } = params;
     const body = await req.json().catch(() => ({}));
-    const { shortlisted } = body;
+    const parseResult = shortlistSchema.safeParse(body);
 
-    if (typeof shortlisted !== "boolean") {
+    if (!parseResult.success) {
+      const issueMessages = parseResult.error.issues.map(
+        (issue) => `${issue.path.join(".") || "payload"}: ${issue.message}`
+      );
+      const errorMessage = `Validation failed: ${issueMessages.join("; ")}`;
       return NextResponse.json(
-        { success: false, message: "Field 'shortlisted' must be a boolean", error: "Invalid parameter format", data: null },
+        { success: false, message: errorMessage, error: errorMessage, data: null },
         { status: 400 }
       );
     }
+
+    const { shortlisted } = parseResult.data;
+    const db = await connect();
+    const { id } = params;
 
     try {
         const docRef = db.collection('formData').doc(id);
@@ -39,7 +53,21 @@ export async function PATCH(req, { params }) {
             );
         }
 
+        const previousShortlisted = docSnapshot.data()?.shortlisted ?? false;
+
         await docRef.update({ shortlisted });
+
+        // Record administrative mutation in auditLog collection (non-blocking)
+        await logAuditEvent(db, {
+          adminEmail: session.user.email,
+          action: "UPDATE_SHORTLIST_STATUS",
+          targetId: id,
+          details: {
+            previousShortlisted,
+            newShortlisted: shortlisted,
+          },
+        });
+
         const updatedSnapshot = await docRef.get();
 
         const applicant = {
@@ -62,4 +90,3 @@ export async function PATCH(req, { params }) {
         );
     }
 }
-

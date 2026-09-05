@@ -114,3 +114,24 @@ Department names and questionnaire strings in `constants/index.js` were found co
 ## 10. Out of Scope
 
 - Front-end UI restyling and CSS/Tailwind layout modifications (Tailwind classes were stripped from most components and are managed separately).
+
+---
+
+## 11. Server-Side Schema Validation (Zod) & Audit Logging (`auditLog`)
+
+### Server-Side Schema Validation
+Integrated Zod schema validation across mutation endpoints to strictly validate and sanitize input payloads before Firestore operations:
+- `app/api/submit-form/route.js`: Validates `Name`, `RegistrationNumber` (regex `/^\d{2}[A-Z]{3}\d{4}$/`), `Phone`, `Year of Study`, `Department` (restricted to valid enum of 12 department names), and `Questions` map. Ensures client-supplied properties (e.g. `shortlisted`, `Email`, `createdAt`) are sanitized or ignored, preventing privilege escalation or data corruption. If validation fails, returns HTTP 400 Bad Request detailing specific field errors.
+- `app/api/shortlist/[id]/route.js`: Validates `shortlisted` as a strict boolean (`typeof shortlisted === "boolean"`) via Zod schema before executing Firestore document updates.
+
+### Admin Mutation Audit Logging (`auditLog`)
+Implemented server-side audit logging (`lib/audit.js`) for administrative mutations.
+- Whenever an admin performs a mutation (e.g. updating an applicant's shortlisting status in `app/api/shortlist/[id]/route.js`), an audit document is automatically appended to the `auditLog` collection in Firestore via `firebase-admin`.
+- Each audit entry captures:
+  - `adminEmail`: Admin user's authenticated session email
+  - `action`: Mutation identifier (e.g. `"UPDATE_SHORTLIST_STATUS"`)
+  - `targetId`: Document ID of the impacted applicant record
+  - `details`: State change details (e.g. `{ previousShortlisted: false, newShortlisted: true }`)
+  - `timestamp`: Server timestamp (`new Date()`)
+- Audit writes operate in a non-blocking try/catch wrapper so audit log service degradation never impacts user-facing application mutations. Sensitive applicant PII is excluded from audit logs to prevent redundant sensitive data replication.
+
