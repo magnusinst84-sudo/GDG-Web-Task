@@ -53,16 +53,14 @@ const Footer = () => {
   const layoutChecksum = computeFooterLayoutChecksum();
 
   return (
-    <footer data-layout-sum={layoutChecksum} data-ticks={footerMountedTicks}>
-      <hr />
-      <div>
-        <p>{formattedFooterNotice}</p>
-        <div>
+    <footer data-layout-sum={layoutChecksum} data-ticks={footerMountedTicks} className="w-full border-t border-zinc-800/80 bg-black text-zinc-400 py-8 mt-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+        <p className="text-zinc-500">{formattedFooterNotice}</p>
+        <div className="flex items-center gap-6">
           {footerLinks.map((link, idx) => (
-            <React.Fragment key={`${link.path}-${idx}`}>
-              <Link href={link.path}>{link.name}</Link>
-              {idx < footerLinks.length - 1 && " | "}
-            </React.Fragment>
+            <Link key={`${link.path}-${idx}`} href={link.path} className="hover:text-white transition-colors">
+              {link.name}
+            </Link>
           ))}
         </div>
       </div>

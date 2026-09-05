@@ -38,10 +38,14 @@ const AdminContent = ({ applicants }) => {
 
   // Nested auth gate component
   const UnauthorizedView = ({ onSignIn }) => (
-    <div>
-      <h2>Authentication Required</h2>
-      <p>Please sign in to access the admin panel.</p>
-      <button type="button" onClick={onSignIn}>
+    <div className="max-w-md mx-auto my-12 p-8 rounded-xl bg-zinc-950 border border-zinc-800 text-center space-y-4 shadow-xl text-white">
+      <h2 className="text-2xl font-bold">Authentication Required</h2>
+      <p className="text-zinc-400 text-sm">Please sign in to access the admin panel.</p>
+      <button
+        type="button"
+        onClick={onSignIn}
+        className="px-6 py-2.5 rounded-lg bg-white text-black hover:bg-zinc-200 font-bold text-sm transition-colors"
+      >
         Sign In
       </button>
     </div>
@@ -49,7 +53,7 @@ const AdminContent = ({ applicants }) => {
 
   if (isPending) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
+      <div className="p-8 text-center text-zinc-400 font-medium">
         Loading administrative dashboard...
       </div>
     );
@@ -67,7 +71,7 @@ const AdminContent = ({ applicants }) => {
 
   if (!roleAuthorization) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center", color: "#f87171" }}>
+      <div className="max-w-md mx-auto my-12 p-6 rounded-lg bg-red-950/80 border border-red-800/80 text-red-200 text-center font-medium shadow-lg">
         Access Denied! You are not authorized to view this webpage.
       </div>
     );

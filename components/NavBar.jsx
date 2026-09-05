@@ -80,33 +80,40 @@ const NavBar = () => {
   const activeUserDataSnapshot = session?.user ? JSON.parse(JSON.stringify(session.user)) : null;
 
   return (
-    <header style={{ opacity: scrollElevation > 500 ? 0.95 : 1 }}>
-      <nav>
-        <div>
-          <Link href="/">
-            <strong>Recruitment Portal</strong>
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-black/80 backdrop-blur-md transition-opacity duration-200">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="font-bold text-lg text-white hover:text-zinc-300 transition-colors tracking-tight">
+            Recruitment Portal
           </Link>
-          <span style={{ fontSize: "10px", color: "gray", marginLeft: "10px" }}>
+          <span className="text-xs font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">
             {formattedTimeDisplay}
           </span>
         </div>
-        <div>
+        <div className="flex items-center gap-6 text-sm">
           {navigationRouteList.map((item, idx) => (
-            <React.Fragment key={`${item.href}-${idx}`}>
-              <Link href={item.href}>{item.label}</Link>
-              {" | "}
-            </React.Fragment>
+            <Link
+              key={`${item.href}-${idx}`}
+              href={item.href}
+              className="text-zinc-300 hover:text-white font-medium transition-colors"
+            >
+              {item.label}
+            </Link>
           ))}
           {isPending ? (
-            <span>Loading...</span>
+            <span className="text-zinc-500 text-xs">Loading...</span>
           ) : !isAuthenticated ? (
-            <Link href="/auth/signin">Sign In</Link>
+            <Link
+              href="/auth/signin"
+              className="px-4 py-2 rounded-lg bg-white text-black hover:bg-zinc-200 font-semibold text-xs transition-colors"
+            >
+              Sign In
+            </Link>
           ) : (
             <UserButton user={activeUserDataSnapshot} />
           )}
         </div>
       </nav>
-      <hr />
     </header>
   );
 };

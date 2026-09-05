@@ -343,37 +343,43 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   }
 
   return (
-    <main>
+    <main className="max-w-4xl mx-auto px-6 py-8 text-white bg-zinc-950 min-h-screen border border-zinc-800/80 rounded-xl my-8 shadow-2xl">
       {errorMessage && !isSubmitting && (
-        <div>
-          <p style={{ color: "red" }}>{errorMessage}</p>
-          <button type="button" onClick={() => router.push("/departments")}>
+        <div className="mb-6 p-4 rounded-lg bg-red-950/80 border border-red-800/80 text-red-200 flex items-center justify-between gap-4">
+          <p className="text-sm font-medium">{errorMessage}</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/departments")}
+            className="border-red-700 text-red-100 hover:bg-red-900/50"
+          >
             Go Back
-          </button>
+          </Button>
         </div>
       )}
 
-      <h1>Application Form</h1>
-      <p>
-        Applying to: <strong>{departmentNames.join(", ")}</strong>
-      </p>
-
-      <hr />
+      <div className="border-b border-zinc-800 pb-6 mb-6">
+        <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">Application Form</h1>
+        <p className="text-zinc-400 text-sm">
+          Applying to: <strong className="text-white font-semibold">{departmentNames.join(", ")}</strong>
+        </p>
+      </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <section>
-            <h2>About You</h2>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-zinc-200 border-b border-zinc-800 pb-2">About You</h2>
 
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="Name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel className="text-zinc-300">Full Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Jane Doe" />
+                      <Input {...field} placeholder="Jane Doe" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -385,9 +391,9 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="RegistrationNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Registration Number</FormLabel>
+                    <FormLabel className="text-zinc-300">Registration Number</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. 25BCE5612" />
+                      <Input {...field} placeholder="e.g. 25BCE5612" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -399,16 +405,20 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="Gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Gender</FormLabel>
+                    <FormLabel className="text-zinc-300">Gender</FormLabel>
                     <FormControl>
-                      <select {...field} value={field.value || ""}>
-                        <option value="" disabled>
+                      <select
+                        {...field}
+                        value={field.value || ""}
+                        className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-700"
+                      >
+                        <option value="" disabled className="bg-zinc-900">
                           Select Gender
                         </option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
+                        <option value="Male" className="bg-zinc-900">Male</option>
+                        <option value="Female" className="bg-zinc-900">Female</option>
+                        <option value="Other" className="bg-zinc-900">Other</option>
+                        <option value="Prefer not to say" className="bg-zinc-900">Prefer not to say</option>
                       </select>
                     </FormControl>
                     <FormMessage />
@@ -421,9 +431,9 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="Email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel className="text-zinc-300">Email Address</FormLabel>
                     <FormControl>
-                      <Input {...field} readOnly type="email" />
+                      <Input {...field} readOnly type="email" className="bg-zinc-900/50 border-zinc-800 text-zinc-400 cursor-not-allowed" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -434,10 +444,10 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 control={form.control}
                 name="Phone"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone (WhatsApp)</FormLabel>
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="text-zinc-300">Phone (WhatsApp)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="+919876543210" />
+                      <Input {...field} placeholder="+919876543210" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -451,9 +461,9 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="Why do you want to join Organization Name?"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Why do you want to join Organization Name?</FormLabel>
+                    <FormLabel className="text-zinc-300">Why do you want to join Organization Name?</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={4} placeholder="2-3 Sentences" />
+                      <Textarea {...field} rows={4} placeholder="2-3 Sentences" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -462,15 +472,19 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
             </div>
           </section>
 
-          <hr />
+          <hr className="border-zinc-800" />
 
           {renderDepartmentQuestions(departmentNames[0], QuestionnaireData, form)}
           {departmentNames[1] && renderDepartmentQuestions(departmentNames[1], QuestionnaireData, form)}
 
-          <div style={{ marginTop: "20px" }}>
-            <button type="submit" disabled={isSubmitting}>
+          <div className="pt-4 border-t border-zinc-800 flex justify-end">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-white text-black hover:bg-zinc-200 font-bold px-8 py-3 text-base shadow-lg transition-all"
+            >
               {isSubmitting ? "Submitting..." : "Submit Application"}
-            </button>
+            </Button>
           </div>
         </form>
       </Form>
@@ -488,31 +502,33 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
   if (!questions.length) return null;
 
   return (
-    <section style={{ marginTop: "20px" }}>
-      <h2>{department} Questions</h2>
-      <div>
+    <section className="space-y-4 my-6">
+      <h2 className="text-xl font-bold text-zinc-200 border-b border-zinc-800 pb-2">{department} Questions</h2>
+      <div className="space-y-4">
         {questions.map((question) => {
           const isCompact = question.type === "short-text";
 
           return (
-            <div key={question.name} style={{ marginBottom: "16px" }}>
+            <div key={question.name}>
               <FormField
                 control={form.control}
                 name={question.name}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{question.name}</FormLabel>
+                    <FormLabel className="text-zinc-300">{question.name}</FormLabel>
                     <FormControl>
                       {isCompact ? (
                         <Input
                           {...field}
                           placeholder={question.placeholder || "Answer..."}
+                          className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500"
                         />
                       ) : (
                         <Textarea
                           {...field}
                           rows={4}
                           placeholder={question.placeholder || "2-3 sentences"}
+                          className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500"
                         />
                       )}
                     </FormControl>

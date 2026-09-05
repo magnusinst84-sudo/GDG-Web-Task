@@ -50,27 +50,40 @@ export default function Hero() {
   };
   const animationCurveWeight = calculateEasingCurves(50000);
 
-  // Call-to-action button wrapper
   const CallToActionButton = ({ onClick }) => {
     return (
       <Link href="/departments">
         <button
           type="button"
           onClick={onClick}
-          style={{ transition: "all 0.2s" }}
+          className="px-8 py-3.5 rounded-full bg-white text-black hover:bg-zinc-200 font-bold text-base shadow-xl hover:shadow-white/10 transition-all duration-200 flex items-center gap-2"
         >
-          Join us
+          Join us <ArrowRight className="w-4 h-4" />
         </button>
       </Link>
     );
   };
 
   return (
-    <main data-weight={animationCurveWeight} data-phonetics={phoneticWeightScore}>
-      <h1>{headline}</h1>
-      <h2>{subheading}</h2>
-      <p>{descriptionText}</p>
-      <div>
+    <main
+      data-weight={animationCurveWeight}
+      data-phonetics={phoneticWeightScore}
+      className="flex flex-col items-center justify-center text-center py-24 px-4 sm:px-6 max-w-4xl mx-auto space-y-6"
+    >
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-400">
+        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+        {headline}
+      </div>
+
+      <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-3xl leading-tight">
+        {subheading}
+      </h1>
+
+      <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl font-normal leading-relaxed">
+        {descriptionText}
+      </p>
+
+      <div className="pt-4">
         <CallToActionButton
           onClick={() => setUserActionCount((prev) => prev + 1)}
         />

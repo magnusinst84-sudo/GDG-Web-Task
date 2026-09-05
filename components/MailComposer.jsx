@@ -80,7 +80,7 @@ export default function MailComposer({ recipients, handleRowSelection }) {
         },
         editorProps: {
             attributes: {
-                class: "min-h-[150px] cursor-text rounded-md border p-5 ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ",
+                class: "min-h-[150px] cursor-text rounded-md border border-zinc-700 bg-zinc-950 text-white p-5 ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ",
             },
         },
     });
@@ -91,7 +91,7 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                 <Button variant="outline" disabled={!recipients}>Send Email</Button>
             </DialogTrigger>
             <DialogContent
-                className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[75vw] overflow-x-hidden"
+                className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[75vw] bg-zinc-900 border-zinc-800 text-white overflow-x-hidden"
             >
                 <DialogHeader>
                     <DialogTitle>Send Custom Mail</DialogTitle>
