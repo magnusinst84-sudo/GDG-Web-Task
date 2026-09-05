@@ -11,7 +11,7 @@ export async function POST(req) {
     });
     if (!session?.user) {
       return new Response(
-        JSON.stringify({ message: "Authentication required" }),
+        JSON.stringify({ success: false, message: "Authentication required", error: "Authentication required", data: null }),
         { status: 401 }
       );
     }
@@ -19,14 +19,32 @@ export async function POST(req) {
     const user = session.user;
     const userEmail = user.email;
 
-    const deadline = new Date("2026-12-31T23:59:59+05:30");
-    if (new Date() > deadline)
+    const rawDeadline = process.env.SUBMISSION_DEADLINE || "2026-12-31T23:59:59+05:30";
+    const deadlineDate = new Date(rawDeadline);
+    if (isNaN(deadlineDate.getTime())) {
+      console.error("Invalid SUBMISSION_DEADLINE environment variable:", rawDeadline);
       return new Response(
         JSON.stringify({
-          message: "The submission deadline has passed"
+          success: false,
+          message: "Server configuration error: invalid submission deadline",
+          error: "Server configuration error",
+          data: null,
+        }),
+        { status: 500 }
+      );
+    }
+
+    if (new Date() > deadlineDate) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "The submission deadline has passed",
+          error: "The submission deadline has passed",
+          data: null,
         }),
         { status: 403 }
       );
+    }
 
     const db = await connect();
     const data = await req.json();
@@ -37,7 +55,10 @@ export async function POST(req) {
     if (formFields.RegistrationNumber && !regNoRegex.test(formFields.RegistrationNumber)) {
       return new Response(
         JSON.stringify({
+          success: false,
           message: "Registration number must be 2 numbers, 3 uppercase letters, and 4 numbers (e.g. 25BCE5612)",
+          error: "Invalid Registration Number format",
+          data: null,
         }),
         { status: 400 }
       );
@@ -75,14 +96,20 @@ export async function POST(req) {
 
       return new Response(
         JSON.stringify({
+          success: true,
           message: "Form submitted successfully!",
+          data: { department: Department },
+          error: null,
         }),
         { status: 200 }
       );
     } catch (txError) {
       return new Response(
         JSON.stringify({
+          success: false,
           message: txError.message,
+          error: txError.message,
+          data: null,
         }),
         { status: 400 }
       );
@@ -90,8 +117,15 @@ export async function POST(req) {
 
   } catch (error) {
     console.error("Form submission error:", error);
-    return new Response(JSON.stringify({ message: "Error submitting form" }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Error submitting form",
+        error: error.message || "Internal Server Error",
+        data: null,
+      }),
+      { status: 500 }
+    );
   }
 }
+

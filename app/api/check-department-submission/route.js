@@ -11,7 +11,7 @@ export async function GET(request) {
     });
     if (!session?.user) {
       return new Response(
-        JSON.stringify({ error: "Authentication required" }),
+        JSON.stringify({ success: false, message: "Authentication required", error: "Authentication required", data: null }),
         { status: 401 }
       );
     }
@@ -25,14 +25,14 @@ export async function GET(request) {
 
     if (!email || !department) {
       return new Response(
-        JSON.stringify({ error: "Missing email or department" }),
+        JSON.stringify({ success: false, message: "Missing email or department", error: "Missing email or department", data: null }),
         { status: 400 }
       );
     }
 
     if (email !== userEmail) {
       return new Response(
-        JSON.stringify({ error: "You can only check your own submissions" }),
+        JSON.stringify({ success: false, message: "You can only check your own submissions", error: "Unauthorized access", data: null }),
         { status: 403 }
       );
     }
@@ -44,13 +44,29 @@ export async function GET(request) {
       .where("Department", "==", department)
       .get();
 
-    return new Response(JSON.stringify({ submitted: snapshot.size > 0 }), {
-      status: 200,
-    });
+    const isSubmitted = snapshot.size > 0;
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Department submission status checked",
+        submitted: isSubmitted,
+        data: { submitted: isSubmitted },
+        error: null,
+      }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error checking department submission:", error);
-    return new Response(JSON.stringify({ error: "Database query failed" }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Database query failed",
+        error: error.message || "Database query failed",
+        data: null,
+      }),
+      { status: 500 }
+    );
   }
 }
+

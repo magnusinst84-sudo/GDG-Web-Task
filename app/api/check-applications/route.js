@@ -12,7 +12,7 @@ export async function GET(req) {
     });
     if (!session?.user) {
       return NextResponse.json(
-        { message: "Authentication required" },
+        { success: false, message: "Authentication required", error: "Authentication required", data: null },
         { status: 401 }
       );
     }
@@ -25,14 +25,14 @@ export async function GET(req) {
 
     if (!email) {
       return NextResponse.json(
-        { message: "Email is required" },
+        { success: false, message: "Email is required", error: "Email is required", data: null },
         { status: 400 }
       );
     }
 
     if (email !== userEmail) {
       return NextResponse.json(
-        { message: "You can only check your own applications" },
+        { success: false, message: "You can only check your own applications", error: "Unauthorized access", data: null },
         { status: 403 }
       );
     }
@@ -45,14 +45,28 @@ export async function GET(req) {
       .get();
     const submittedDepartments = snapshot.docs.map((doc) => doc.data().Department).filter(Boolean);
 
-    return NextResponse.json({ count: snapshot.size, submittedDepartments }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Application status retrieved successfully",
+        count: snapshot.size,
+        submittedDepartments,
+        data: { count: snapshot.size, submittedDepartments },
+        error: null,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error checking applications:", error);
     return NextResponse.json(
       {
-        message: "Internal server error inside check-applications dir",
+        success: false,
+        message: "Internal server error while checking applications",
+        error: error.message || "Internal Server Error",
+        data: null,
       },
       { status: 500 }
     );
   }
 }
+

@@ -10,7 +10,7 @@ export async function PATCH(req, { params }) {
 
     if (!session?.user || session.user.role !== "admin") {
       return NextResponse.json(
-        { success: false, message: "Unauthorized access" },
+        { success: false, message: "Unauthorized access", error: "Unauthorized access", data: null },
         { status: 403 }
       );
     }
@@ -18,26 +18,48 @@ export async function PATCH(req, { params }) {
     const db = await connect();
 
     const { id } = params;
-    const { shortlisted } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { shortlisted } = body;
+
+    if (typeof shortlisted !== "boolean") {
+      return NextResponse.json(
+        { success: false, message: "Field 'shortlisted' must be a boolean", error: "Invalid parameter format", data: null },
+        { status: 400 }
+      );
+    }
 
     try {
         const docRef = db.collection('formData').doc(id);
-        await docRef.update({ shortlisted });
-        const snapshot = await docRef.get();
+        const docSnapshot = await docRef.get();
 
-        if (!snapshot.exists) {
-            return NextResponse.json({ success: false, message: 'Applicant not found' }, { status: 404 });
+        if (!docSnapshot.exists) {
+            return NextResponse.json(
+              { success: false, message: 'Applicant not found', error: 'Applicant not found', data: null },
+              { status: 404 }
+            );
         }
 
+        await docRef.update({ shortlisted });
+        const updatedSnapshot = await docRef.get();
+
         const applicant = {
-            id: snapshot.id,
-            _id: snapshot.id,
-            ...serializeFirestoreData(snapshot.data()),
+            id: updatedSnapshot.id,
+            _id: updatedSnapshot.id,
+            ...serializeFirestoreData(updatedSnapshot.data()),
         };
 
-        return NextResponse.json({ success: true, data: applicant });
+        return NextResponse.json({
+          success: true,
+          message: `Applicant shortlist status updated to ${shortlisted}`,
+          data: applicant,
+          error: null,
+        });
     } catch (error) {
         console.error('Error updating applicant:', error.message);
-        return NextResponse.json({ success: false, message: error.message }, { status: 400 });
+        return NextResponse.json(
+          { success: false, message: error.message || "Error updating applicant", error: error.message || "Error updating applicant", data: null },
+          { status: 400 }
+        );
     }
 }
+

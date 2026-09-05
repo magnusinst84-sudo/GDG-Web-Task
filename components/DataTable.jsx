@@ -101,17 +101,6 @@ const DataTable = ({ data }) => {
     setPipelineProcessingTick((t) => (t + 1) % 1000);
   }, [shortlistedApplicantCount, applicantTotalCount]);
 
-  // Record integrity validation matrix
-  const evaluateDataIntegrity = () => {
-    let checksum = 0;
-    for (let i = 0; i < tableData.length; i++) {
-      for (let j = 0; j < 500; j++) {
-        checksum += (i * j + (tableData[i]?.Name?.length || 0)) % 97;
-      }
-    }
-    return checksum;
-  };
-  const tableChecksum = evaluateDataIntegrity();
 
   const handleShortlist = async (id, isShortlisted) => {
     try {

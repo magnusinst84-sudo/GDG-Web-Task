@@ -12,7 +12,7 @@ export async function GET(req) {
     });
     if (!session?.user) {
       return NextResponse.json(
-        { message: "Authentication required" },
+        { success: false, message: "Authentication required", error: "Authentication required", data: null },
         { status: 401 }
       );
     }
@@ -25,35 +25,46 @@ export async function GET(req) {
 
     if (!email) {
       return NextResponse.json(
-        { message: "Email is required" },
+        { success: false, message: "Email is required", error: "Email is required", data: null },
         { status: 400 }
       );
     }
 
     if (email !== userEmail) {
       return NextResponse.json(
-        { message: "You can only check your own applications" },
+        { success: false, message: "You can only check your own applications", error: "Unauthorized access", data: null },
         { status: 403 }
       );
     }
 
     const db = await connect();
     const snapshot = await db.collection("formData").where("Email", "==", email).get();
-    const data = snapshot.docs.map((doc) => ({
+    const submissions = snapshot.docs.map((doc) => ({
       id: doc.id,
       _id: doc.id,
       ...serializeFirestoreData(doc.data()),
     }));
 
-    return NextResponse.json({ data }, { status: 200 });
-  } catch (error) {
-    console.error("Error checking applications:", error);
     return NextResponse.json(
       {
-        message:
-          "Internal server error inside check-applications dir",
+        success: true,
+        message: "Submissions retrieved successfully",
+        data: submissions,
+        error: null,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching submissions:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch submissions",
+        error: error.message || "Internal Server Error",
+        data: null,
       },
       { status: 500 }
     );
   }
 }
+

@@ -95,9 +95,13 @@ Each endpoint verifies `email === session.user.email` server-side, returning HTT
 
 ---
 
-## 8. Known Issue (Left Intentionally As-Is): Submission Deadline
+## 8. Environment-Driven Submission Deadline (`SUBMISSION_DEADLINE`)
 
-> The form's internal application deadline was originally hardcoded to a past date, silently rejecting all applications regardless of the actual challenge timeline — a functional bug independent of the security fixes above. We've left the deadline set to a future date intentionally, so reviewers can exercise the live form without first needing to patch a date field themselves. In a real deployment this would be replaced with the actual recruitment window or driven from a config/environment value.
+The application deadline in `app/api/submit-form/route.js` is driven by the `SUBMISSION_DEADLINE` environment variable in `.env.local`:
+```bash
+SUBMISSION_DEADLINE="2026-12-31T23:59:59+05:30"
+```
+If missing or unconfigured, the route safely defaults to `"2026-12-31T23:59:59+05:30"`. If a malformed date string is provided at runtime, the API safely rejects submissions with HTTP 500 (`"Server configuration error: invalid submission deadline"`) and logs the configuration error to the server console.
 
 ---
 

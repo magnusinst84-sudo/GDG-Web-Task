@@ -13,7 +13,7 @@ export async function GET() {
 
     if (!session?.user || session.user.role !== "admin") {
       return NextResponse.json(
-        { error: "Unauthorized access" },
+        { success: false, message: "Unauthorized access", error: "Unauthorized access", data: null },
         { status: 403 }
       );
     }
@@ -26,12 +26,19 @@ export async function GET() {
       ...serializeFirestoreData(doc.data()),
     }));
 
-    return NextResponse.json({ applicants });
+    return NextResponse.json({
+      success: true,
+      message: "Applicants retrieved successfully",
+      applicants,
+      data: { applicants },
+      error: null,
+    });
   } catch (error) {
     console.error("Error fetching applicants:", error);
     return NextResponse.json(
-      { error: "Failed to fetch applicants" },
+      { success: false, message: "Failed to fetch applicants", error: "Failed to fetch applicants", data: null },
       { status: 500 }
     );
   }
 }
+
