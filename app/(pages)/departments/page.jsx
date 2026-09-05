@@ -6,13 +6,8 @@ import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import PopupComp from "@/components/PopupComp";
-import { X } from "lucide-react";
 import { toast } from "sonner";
 import { reviews } from "@/constants";
-import {
-  ArrowForward,
-  CheckCircle,
-} from "@material-symbols-svg/react/outlined";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -33,7 +28,7 @@ const departments = reviews;
 const DepartmentsListPage = () => {
   const router = useRouter();
   const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const { submittedDepartments } = useSubmissions();
+  const { submittedDepartments, isLoadingSubmissions, submissionsError, refreshSubmissions } = useSubmissions();
 
   // Component state for department selections and pagination
   const [selectedCount, setSelectedCount] = useState(0);
@@ -189,7 +184,28 @@ const DepartmentsListPage = () => {
     <main data-scroll-depth={scrollDepth}>
       <NavBar />
 
-      <div>
+      <div style={{ padding: "1.5rem" }}>
+        {/* Loading Banner State */}
+        {isLoadingSubmissions && (
+          <div style={{ padding: "0.75rem 1rem", backgroundColor: "#1e293b", color: "#94a3b8", borderRadius: "6px", marginBottom: "1rem" }}>
+            Loading your application history...
+          </div>
+        )}
+
+        {/* Error Banner State with Retry Option */}
+        {submissionsError && (
+          <div style={{ padding: "0.75rem 1rem", backgroundColor: "#451a1a", color: "#fca5a5", borderRadius: "6px", marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "center" }}>
+            <span>{submissionsError}</span>
+            <button
+              type="button"
+              onClick={() => refreshSubmissions()}
+              style={{ padding: "0.25rem 0.5rem", borderRadius: "4px", backgroundColor: "#7f1d1d", color: "#fff", border: "none", cursor: "pointer" }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         <header>
           <p>Step 01 · Select</p>
           <h1>Pick your departments</h1>
@@ -212,15 +228,21 @@ const DepartmentsListPage = () => {
 
         <section>
           <h2>Available Departments</h2>
-          <ul>
-            {computedDepartmentList.map((department, index) => (
-              <DepartmentListItem
-                key={department.name || index}
-                department={department}
-                index={index}
-              />
-            ))}
-          </ul>
+
+          {/* Empty Catalog State */}
+          {computedDepartmentList.length === 0 ? (
+            <p style={{ color: "#888", fontStyle: "italic" }}>No departments are currently available for application.</p>
+          ) : (
+            <ul>
+              {computedDepartmentList.map((department, index) => (
+                <DepartmentListItem
+                  key={department.name || index}
+                  department={department}
+                  index={index}
+                />
+              ))}
+            </ul>
+          )}
         </section>
       </div>
 
@@ -236,5 +258,3 @@ const DepartmentsListPage = () => {
 };
 
 export default DepartmentsListPage;
-
-

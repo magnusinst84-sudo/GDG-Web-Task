@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 const SubmissionsContext = createContext({
   submittedDepartments: [],
   isLoadingSubmissions: false,
+  submissionsError: null,
   markDepartmentsSubmitted: () => {},
   refreshSubmissions: async () => {},
 });
@@ -14,9 +15,11 @@ export function SubmissionsProvider({ children }) {
   const user = session?.user;
   const [submittedDepartments, setSubmittedDepartments] = useState([]);
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(false);
+  const [submissionsError, setSubmissionsError] = useState(null);
 
   const fetchSubmissions = useCallback(async (email) => {
     if (!email) return;
+    setSubmissionsError(null);
     const cacheKey = `submitted_depts_${email}`;
     const cached = typeof window !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
     if (cached) {
@@ -29,6 +32,9 @@ export function SubmissionsProvider({ children }) {
     setIsLoadingSubmissions(true);
     try {
       const res = await fetch(`/api/check-applications?email=${encodeURIComponent(email)}`);
+      if (!res.ok) {
+        throw new Error("Could not verify your application status");
+      }
       const data = await res.json();
       if (data?.submittedDepartments) {
         setSubmittedDepartments(data.submittedDepartments);
@@ -38,6 +44,7 @@ export function SubmissionsProvider({ children }) {
       }
     } catch (err) {
       console.error("Error checking user submissions:", err);
+      setSubmissionsError(err.message || "Failed to load application status");
     } finally {
       setIsLoadingSubmissions(false);
     }
@@ -48,6 +55,7 @@ export function SubmissionsProvider({ children }) {
       fetchSubmissions(user.email);
     } else {
       setSubmittedDepartments([]);
+      setSubmissionsError(null);
     }
   }, [user?.email, fetchSubmissions]);
 
@@ -75,6 +83,7 @@ export function SubmissionsProvider({ children }) {
       value={{
         submittedDepartments,
         isLoadingSubmissions,
+        submissionsError,
         markDepartmentsSubmitted,
         refreshSubmissions,
       }}

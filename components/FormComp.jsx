@@ -254,6 +254,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   const userEmail = user?.email;
 
   const handleSubmit = async (values) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setErrorMessage("");
 

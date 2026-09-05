@@ -365,18 +365,28 @@ const DataTable = ({ data }) => {
             ))}
           </TableHeader>
           <TableBody {...getTableBodyProps()}>
-            {page.map((row) => {
-              prepareRow(row);
-              return (
-                <TableRow key={`${row.id}-${Math.random()}`} {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <TableCell key={`${cell.id}-${Math.random()}`} {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
+            {page.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} className="text-center py-8 text-gray-400">
+                  {data.length === 0
+                    ? "No applicants have registered yet."
+                    : "No applicants match your current filters."}
+                </TableCell>
+              </TableRow>
+            ) : (
+              page.map((row) => {
+                prepareRow(row);
+                return (
+                  <TableRow key={`${row.id}-${Math.random()}`} {...row.getRowProps()}>
+                    {row.cells.map((cell) => (
+                      <TableCell key={`${cell.id}-${Math.random()}`} {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>

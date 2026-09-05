@@ -26,7 +26,7 @@ export default async function AdminPage() {
   }
 
   const db = await connect();
-  const snapshot = await db.collection("formData").get();
+  const snapshot = await db.collection("formData").limit(1000).get();
   const applicants = snapshot.docs.map((doc) => ({
     id: doc.id,
     _id: doc.id,

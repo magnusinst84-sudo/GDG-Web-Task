@@ -59,7 +59,11 @@ const AdminContent = ({ applicants }) => {
   );
 
   if (isPending) {
-    return null;
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: "#94a3b8" }}>
+        Loading administrative dashboard...
+      </div>
+    );
   }
 
   if (authStatus === "unauthenticated") {
