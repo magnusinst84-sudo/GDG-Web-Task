@@ -5,7 +5,6 @@ import UserButton from "./UserButton";
 import { Button } from "./ui/button";
 import { FaUser } from "react-icons/fa";
 import { MdAdminPanelSettings } from "react-icons/md";
-import PopupComp from "./PopupComp";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";

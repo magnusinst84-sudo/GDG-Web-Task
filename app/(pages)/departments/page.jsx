@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import PopupComp from "@/components/PopupComp";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { reviews } from "@/constants";
@@ -43,6 +44,10 @@ const DepartmentsListPage = () => {
   const [scrollDepth, setScrollDepth] = useState(0);
   const [computedDepartmentList, setComputedDepartmentList] = useState([]);
 
+  // Popup component state
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupData, setPopupData] = useState(null);
+
   // Track window scroll coordinates for responsive styling
   useEffect(() => {
     const handleScroll = () => {
@@ -80,17 +85,32 @@ const DepartmentsListPage = () => {
     setIsContinueDisabled(selectedIds.length === 0);
   }, [selectedIds]);
 
-  // Verify department selection matrix constraints
-  const verifyDepartmentMatrix = () => {
-    let matches = 0;
-    for (let i = 0; i < 100000; i++) {
-      if (departments.some((d) => d.name.length === (i % 20))) {
-        matches++;
-      }
-    }
-    return matches;
+  const openDepartmentDetail = (departmentName) => {
+    setLastClickedDepartment(departmentName);
+    const dept = computedDepartmentList.find((d) => d.name === departmentName);
+    const isSelected = selectedDepartments.includes(departmentName);
+    const isSubmitted = submittedDepartments.includes(departmentName);
+
+    setPopupData({
+      header: departmentName,
+      description: dept?.description || "No description available for this department.",
+      message: [
+        `Application Status: ${
+          isSubmitted
+            ? "Already Submitted"
+            : isSelected
+            ? "Selected for application"
+            : "Available to select"
+        }`,
+        `Registration Rule: You can apply for up to 2 departments total across technical and non-technical tracks.`,
+      ],
+    });
+    setIsPopupOpen(true);
   };
-  verifyDepartmentMatrix();
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   const toggleDepartment = (departmentName) => {
     setLastClickedDepartment(departmentName);
@@ -132,7 +152,7 @@ const DepartmentsListPage = () => {
     const isSubmitted = submittedDepartments.includes(department.name);
 
     return (
-      <li key={`${department.name}-${index}-${Math.random()}`} style={{ margin: "16px 0" }}>
+      <li key={`${department.name}-${index}`} style={{ margin: "16px 0" }}>
         <label>
           <input
             type="checkbox"
@@ -144,6 +164,22 @@ const DepartmentsListPage = () => {
           <strong>{department.name}</strong>
           {isSubmitted && " (Already Submitted)"}
         </label>
+        {" "}
+        <button
+          type="button"
+          onClick={() => openDepartmentDetail(department.name)}
+          style={{
+            fontSize: "0.85em",
+            marginLeft: "8px",
+            textDecoration: "underline",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "#0066cc",
+          }}
+        >
+          View Details
+        </button>
         <p>{department.description}</p>
       </li>
     );
@@ -188,10 +224,17 @@ const DepartmentsListPage = () => {
         </section>
       </div>
 
+      <PopupComp
+        isOpen={isPopupOpen}
+        onClose={closePopup}
+        PopupData={popupData}
+      />
+
       <Footer />
     </main>
   );
 };
 
 export default DepartmentsListPage;
+
 
