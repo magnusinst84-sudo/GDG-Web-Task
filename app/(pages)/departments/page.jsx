@@ -162,162 +162,181 @@ const DepartmentsListPage = () => {
     return (
       <div
         className={cn(
-          "relative flex flex-col justify-between transition-all duration-200",
+          "relative flex flex-col justify-between transition-all duration-200 overflow-hidden",
           "border-l-[3px]",
-          featured ? "p-7 sm:p-8" : "p-5 sm:p-6",
+          featured ? "p-8 sm:p-10 min-h-[260px]" : "p-5 sm:p-6 min-h-[180px]",
           isSubmitted && "opacity-50"
         )}
         style={{
-          background: isSelected
-            ? hexToRgba(accentColor, 0.06)
-            : "rgba(255,255,255,0.025)",
+          background: "#0a0a0a",
           borderLeftColor: isSelected ? accentColor : "rgba(255,255,255,0.1)",
           borderTop: "var(--editorial-rule)",
           borderRight: "var(--editorial-rule)",
           borderBottom: "var(--editorial-rule)",
           boxShadow: isSelected
-            ? `0 0 0 1px ${hexToRgba(accentColor, 0.18)}`
+            ? `0 0 0 1px ${hexToRgba(accentColor, 0.2)}`
             : "none",
-          transition: "background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease",
+          transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         }}
       >
-        {/* Status badges */}
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Dept tone pip */}
-            <span
-              className="inline-block w-2 h-2 rounded-full flex-shrink-0"
-              style={{ background: accentColor, opacity: 0.8 }}
-            />
+        {/* Per-department radial gradient wash — cosmetic only */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `radial-gradient(ellipse at 85% 15%, ${accentColor}28 0%, ${accentColor}08 40%, rgba(10,10,10,0) 72%)`,
+            pointerEvents: "none",
+            zIndex: 0,
+            transition: "opacity 0.3s ease",
+            opacity: isSelected ? 1.4 : 1,
+          }}
+        />
 
-            {isSubmitted && (
+        {/* Card content sits above the gradient wash */}
+        <div className="relative z-10 flex flex-col h-full">
+
+          {/* Status badges row */}
+          <div className="flex items-start justify-between gap-3 mb-5">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Dept tone pip */}
               <span
-                className="mono-label px-2 py-0.5"
-                style={{
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  color: "rgba(255,255,255,0.45)",
-                }}
-              >
-                Submitted ✓
-              </span>
-            )}
-            {isSelected && !isSubmitted && (
-              <span
-                className="mono-label px-2 py-0.5"
-                style={{
-                  border: `1px solid ${hexToRgba(accentColor, 0.5)}`,
-                  color: accentColor,
-                }}
-              >
-                Selected
-              </span>
-            )}
+                className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                style={{ background: accentColor, opacity: 0.9 }}
+              />
+
+              {isSubmitted && (
+                <span
+                  className="mono-label px-2 py-0.5"
+                  style={{
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "rgba(255,255,255,0.45)",
+                  }}
+                >
+                  Submitted ✓
+                </span>
+              )}
+              {isSelected && !isSubmitted && (
+                <span
+                  className="mono-label px-2 py-0.5"
+                  style={{
+                    border: `1px solid ${hexToRgba(accentColor, 0.5)}`,
+                    color: accentColor,
+                  }}
+                >
+                  Selected
+                </span>
+              )}
+            </div>
+
+            {/* Details button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openDepartmentDetail(department.name);
+              }}
+              className="mono-label flex-shrink-0"
+              style={{
+                borderBottom: "1px solid rgba(255,255,255,0.2)",
+                paddingBottom: "1px",
+                color: "rgba(255,255,255,0.4)",
+                background: "none",
+                cursor: "pointer",
+                transition: "color 0.15s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = "rgba(255,255,255,0.85)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "rgba(255,255,255,0.4)")
+              }
+            >
+              Details →
+            </button>
           </div>
 
-          {/* Details button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDepartmentDetail(department.name);
-            }}
-            className="mono-label flex-shrink-0"
-            style={{
-              borderBottom: "1px solid rgba(255,255,255,0.2)",
-              paddingBottom: "1px",
-              color: "rgba(255,255,255,0.4)",
-              background: "none",
-              cursor: "pointer",
-              transition: "color 0.15s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.color = "rgba(255,255,255,0.85)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.color = "rgba(255,255,255,0.4)")
-            }
-          >
-            Details →
-          </button>
-        </div>
-
-        {/* Department name */}
-        <h3
-          className={cn(
-            "font-extrabold tracking-tight leading-none mb-3",
-            featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
-          )}
-          style={{
-            fontFamily: bricolage.style.fontFamily,
-            color: "#ededed",
-          }}
-        >
-          {department.name}
-        </h3>
-
-        {/* Description — pull-quote style */}
-        <p
-          className={cn(
-            "pull-quote leading-relaxed mb-5",
-            featured ? "text-sm sm:text-base" : "text-sm"
-          )}
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: featured ? 4 : 3,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {department.description}
-        </p>
-
-        {/* Checkbox — sole click target for selection */}
-        <div className="flex items-center gap-3 mt-auto">
-          <label
+          {/* Department name — large on featured */}
+          <h3
             className={cn(
-              "flex items-center gap-2.5 cursor-pointer select-none",
-              isSubmitted && "cursor-not-allowed"
+              "font-extrabold tracking-tight leading-[0.92] mb-3",
+              featured
+                ? "text-4xl sm:text-5xl lg:text-6xl"
+                : "text-xl sm:text-2xl"
             )}
+            style={{
+              fontFamily: bricolage.style.fontFamily,
+              color: isSelected ? accentColor : "#ededed",
+              transition: "color 0.2s",
+            }}
           >
-            <input
-              type="checkbox"
-              disabled={isSubmitted}
-              checked={isSelected}
-              onChange={() => toggleDepartment(department.name)}
-              className="sr-only"
-            />
-            {/* Custom checkbox */}
-            <span
-              className="inline-flex items-center justify-center w-4 h-4 flex-shrink-0 transition-all duration-150"
-              style={{
-                border: isSelected
-                  ? `2px solid ${accentColor}`
-                  : "2px solid rgba(255,255,255,0.25)",
-                background: isSelected
-                  ? hexToRgba(accentColor, 0.2)
-                  : "transparent",
-              }}
-            >
-              {isSelected && (
-                <svg
-                  width="8"
-                  height="6"
-                  viewBox="0 0 8 6"
-                  fill="none"
-                  strokeWidth="2"
-                  stroke={accentColor}
-                >
-                  <path d="M1 3L3 5L7 1" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+            {department.name}
+          </h3>
+
+          {/* Description — pull-quote style */}
+          <p
+            className={cn(
+              "pull-quote leading-relaxed mb-5",
+              featured ? "text-sm sm:text-base" : "text-sm"
+            )}
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: featured ? 4 : 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {department.description}
+          </p>
+
+          {/* Checkbox — sole click target for selection */}
+          <div className="flex items-center gap-3 mt-auto">
+            <label
+              className={cn(
+                "flex items-center gap-2.5 cursor-pointer select-none",
+                isSubmitted && "cursor-not-allowed"
               )}
-            </span>
-            <span
-              className="mono-label"
-              style={{ color: isSelected ? accentColor : "rgba(255,255,255,0.35)" }}
             >
-              {isSubmitted ? "Submitted" : isSelected ? "Deselect" : "Select"}
-            </span>
-          </label>
+              <input
+                type="checkbox"
+                disabled={isSubmitted}
+                checked={isSelected}
+                onChange={() => toggleDepartment(department.name)}
+                className="sr-only"
+              />
+              {/* Custom checkbox */}
+              <span
+                className="inline-flex items-center justify-center w-4 h-4 flex-shrink-0 transition-all duration-150"
+                style={{
+                  border: isSelected
+                    ? `2px solid ${accentColor}`
+                    : "2px solid rgba(255,255,255,0.25)",
+                  background: isSelected
+                    ? hexToRgba(accentColor, 0.2)
+                    : "transparent",
+                }}
+              >
+                {isSelected && (
+                  <svg
+                    width="8"
+                    height="6"
+                    viewBox="0 0 8 6"
+                    fill="none"
+                    strokeWidth="2"
+                    stroke={accentColor}
+                  >
+                    <path d="M1 3L3 5L7 1" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </span>
+              <span
+                className="mono-label"
+                style={{ color: isSelected ? accentColor : "rgba(255,255,255,0.35)" }}
+              >
+                {isSubmitted ? "Submitted" : isSelected ? "Deselect" : "Select"}
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     );
@@ -444,17 +463,52 @@ const DepartmentsListPage = () => {
             </div>
           ) : (
             <>
-              {/* Featured row — first 2 departments larger */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-px mb-px bg-white/[0.06]">
-                {computedDepartmentList.slice(0, 2).map((department) => (
-                  <div key={department.name} className="bg-[#0a0a0a]">
-                    <DepartmentCard department={department} featured />
+              {/* ── Featured row — first 2 departments: visibly larger, asymmetric ── */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, 1fr)",
+                  gap: "1px",
+                  background: "rgba(255,255,255,0.06)",
+                  marginBottom: "1px",
+                }}
+              >
+                {/* Featured card 0 — spans 3 of 4 cols on desktop */}
+                <div
+                  className="bg-[#0a0a0a]"
+                  style={{
+                    gridColumn: "span 4",
+                  }}
+                  // On md screens split to 3+1 via inline responsive isn't possible;
+                  // we use a nested grid approach for the featured pair
+                >
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(1, 1fr)",
+                      gap: "1px",
+                      background: "rgba(255,255,255,0.06)",
+                    }}
+                    className="md:[grid-template-columns:3fr_1.6fr]"
+                  >
+                    <div className="bg-[#0a0a0a]">
+                      <DepartmentCard
+                        department={computedDepartmentList[0]}
+                        featured
+                      />
+                    </div>
+                    <div className="bg-[#0a0a0a]">
+                      <DepartmentCard
+                        department={computedDepartmentList[1]}
+                        featured
+                      />
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
 
-              {/* Standard grid — remaining 10 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06]">
+              {/* ── Standard grid — remaining 10 departments ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06]">
                 {computedDepartmentList.slice(2).map((department) => (
                   <div key={department.name} className="bg-[#0a0a0a]">
                     <DepartmentCard department={department} />
