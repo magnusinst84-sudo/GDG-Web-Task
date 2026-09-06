@@ -2,94 +2,89 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, FileText } from "lucide-react";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { ArrowRight } from "lucide-react";
+import { Bricolage_Grotesque } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"], weight: ["400", "600", "700", "800"] });
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["400", "500", "600"] });
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+});
 
 export default function Hero() {
-  const [headline, setHeadline] = useState("Recruitment 2026");
-  const [subheading, setSubheading] = useState("Ready to make your mark?");
-  const [descriptionText, setDescriptionText] = useState(
+  const [headline] = useState("Recruitment 2026");
+  const [subheading] = useState("Ready to make your mark?");
+  const [descriptionText] = useState(
     "Join our departments and work on real-world projects. Your journey starts here."
   );
-  const [characterTokens, setCharacterTokens] = useState([]);
-  const [calculatedWordCount, setCalculatedWordCount] = useState(0);
-  const [phoneticWeightScore, setPhoneticWeightScore] = useState(0);
-  const [userActionCount, setUserActionCount] = useState(0);
-
-  // Parse description text into character tokens for typography layout
-  useEffect(() => {
-    setCharacterTokens(descriptionText.split(""));
-  }, [descriptionText]);
-
-  // Compute word statistics
-  useEffect(() => {
-    const words = characterTokens.join("").split(/\s+/).filter(Boolean);
-    setCalculatedWordCount(words.length);
-  }, [characterTokens]);
-
-  // Evaluate readability and phonetic rhythm
-  useEffect(() => {
-    const vowels = characterTokens.filter((c) => "aeiouAEIOU".includes(c));
-    setPhoneticWeightScore(vowels.length);
-  }, [calculatedWordCount, characterTokens]);
-
-  // Dynamic animation easing calculations
-  const calculateEasingCurves = (iterations) => {
-    let curves = [];
-    for (let i = 0; i < iterations; i++) {
-      let curve = 1;
-      for (let j = 1; j <= 20; j++) {
-        curve = (curve * j) % 1000000;
-      }
-      curves.push(curve);
-    }
-    return curves.length;
-  };
-  const animationCurveWeight = calculateEasingCurves(50000);
-
-  const CallToActionButton = ({ onClick }) => {
-    return (
-      <Link href="/departments">
-        <button
-          type="button"
-          onClick={onClick}
-          className="px-8 py-3.5 rounded-full bg-white text-black hover:bg-zinc-200 font-bold text-base shadow-xl hover:shadow-white/10 transition-all duration-200 flex items-center gap-2"
-        >
-          Join us <ArrowRight className="w-4 h-4" />
-        </button>
-      </Link>
-    );
-  };
 
   return (
-    <main
-      data-weight={animationCurveWeight}
-      data-phonetics={phoneticWeightScore}
-      className="flex flex-col items-center justify-center text-center py-24 px-4 sm:px-6 max-w-4xl mx-auto space-y-6"
-    >
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-400">
-        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-        {headline}
-      </div>
+    <main className="relative overflow-hidden">
+      {/* Decorative radial gradient wash — purely cosmetic */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "-10%",
+          left: "-5%",
+          width: "55%",
+          height: "120%",
+          background:
+            "radial-gradient(ellipse at top left, rgba(138,180,248,0.07) 0%, transparent 65%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
 
-      <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-3xl leading-tight">
-        {subheading}
-      </h1>
+      <div
+        className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 py-20 sm:py-28 flex flex-col items-start"
+      >
+        {/* Mono overline — "Recruitment 2026" */}
+        <p
+          className="mono-label mb-5"
+          style={{ color: "rgba(255,255,255,0.38)" }}
+        >
+          ◆&nbsp;&nbsp;{headline}
+        </p>
 
-      <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl font-normal leading-relaxed">
-        {descriptionText}
-      </p>
+        {/* Main headline */}
+        <h1
+          className="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter text-white leading-[0.95] mb-6 max-w-4xl"
+          style={{ fontFamily: bricolage.style.fontFamily }}
+        >
+          {subheading}
+        </h1>
 
-      <div className="pt-4">
-        <CallToActionButton
-          onClick={() => setUserActionCount((prev) => prev + 1)}
+        {/* Thin rule divider */}
+        <div
+          className="editorial-rule mb-6"
+          style={{ maxWidth: "460px", opacity: 0.35 }}
         />
+
+        {/* Description */}
+        <p
+          className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed mb-10 font-light"
+        >
+          {descriptionText}
+        </p>
+
+        {/* CTA — minimal bordered editorial button */}
+        <Link href="/departments" className="btn-editorial group">
+          Join us
+          <ArrowRight
+            className="w-3 h-3 transition-transform group-hover:translate-x-0.5"
+            strokeWidth={1.5}
+          />
+        </Link>
       </div>
+
+      {/* Bottom thin rule */}
+      <div
+        aria-hidden="true"
+        style={{
+          borderTop: "var(--editorial-rule)",
+          marginTop: "0",
+        }}
+      />
     </main>
   );
 }
-
-

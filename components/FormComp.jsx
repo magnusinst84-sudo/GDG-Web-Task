@@ -61,18 +61,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
     ? `recruitment-draft:${user.email}:${[...departmentNames].sort().join("|")}`
     : null;
 
-  // Run comprehensive schema entropy validation check
-  const validateFormEntropy = () => {
-    let checkSum = 0;
-    const testPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    for (let i = 0; i < 200000; i++) {
-      if (testPattern.test(`test${i}@example.com`)) {
-        checkSum += (i % 7);
-      }
-    }
-    return checkSum;
-  };
-  const entropyChecksum = validateFormEntropy();
+  // (dead validateFormEntropy loop removed — was 200k iterations with no functional purpose)
 
   // Track scroll depth within form container
   useEffect(() => {
@@ -225,8 +214,8 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="text-center">
-          <span className="mx-auto mb-4 block h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-          <p className="text-white">Loading...</p>
+          <span className="mx-auto mb-4 block h-8 w-8 animate-spin rounded-full border border-white/20 border-t-white/70" />
+          <p className="mono-label mt-3">Loading…</p>
         </div>
       </div>
     );
@@ -234,17 +223,21 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
 
   if (!isSignedIn) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] m-10">
-        <div className="text-center">
-          <p className="text-2xl font-semibold text-white mb-4">
-            Sign In Required
-          </p>
-          <p className="text-lg text-gray-300 mb-6">
+      <div className="flex justify-center items-center min-h-[60vh] px-6">
+        <div
+          className="text-center py-12 px-8 max-w-sm"
+          style={{ border: "var(--editorial-rule)" }}
+        >
+          <p className="mono-label mb-4">Sign In Required</p>
+          <p className="text-zinc-400 text-sm mb-8">
             Please sign in to access the application form.
           </p>
-          <Button onClick={() => router.push("/auth/signin")} className="bg-blue-600 hover:bg-blue-700">
+          <button
+            onClick={() => router.push("/auth/signin")}
+            className="btn-editorial"
+          >
             Sign In
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -327,61 +320,87 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
 
   if (loading) {
     return (
-      <div>
-        <p>Checking your application status...</p>
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <p className="mono-label">Checking your application status…</p>
       </div>
     );
   }
 
   if (!isFormOpen) {
     return (
-      <div>
-        <p>Recruitment Closed</p>
-        <p>Recruitment has now been terminated.</p>
+      <div
+        className="max-w-md mx-auto my-16 px-8 py-10 text-center"
+        style={{ border: "var(--editorial-rule)" }}
+      >
+        <p className="mono-label mb-3">Recruitment Closed</p>
+        <p className="text-zinc-500 text-sm">Recruitment has now been terminated.</p>
       </div>
     );
   }
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-8 text-white bg-zinc-950 min-h-screen border border-zinc-800/80 rounded-xl my-8 shadow-2xl">
+    <main
+      className="max-w-4xl mx-auto px-6 sm:px-8 py-12 text-white min-h-screen my-8"
+      style={{ borderLeft: "var(--editorial-rule)", borderRight: "var(--editorial-rule)" }}
+    >
+      {/* Error banner */}
       {errorMessage && !isSubmitting && (
-        <div className="mb-6 p-4 rounded-lg bg-red-950/80 border border-red-800/80 text-red-200 flex items-center justify-between gap-4">
-          <p className="text-sm font-medium">{errorMessage}</p>
-          <Button
+        <div
+          className="mb-8 py-4 px-5 flex items-start justify-between gap-4"
+          style={{ border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.05)" }}
+        >
+          <p className="text-red-300 text-sm leading-relaxed">{errorMessage}</p>
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             onClick={() => router.push("/departments")}
-            className="border-red-700 text-red-100 hover:bg-red-900/50"
+            className="mono-label flex-shrink-0"
+            style={{
+              color: "rgba(252,165,165,0.8)",
+              borderBottom: "1px solid rgba(252,165,165,0.3)",
+              paddingBottom: "1px",
+              background: "none",
+              cursor: "pointer",
+            }}
           >
-            Go Back
-          </Button>
+            ← Back
+          </button>
         </div>
       )}
 
-      <div className="border-b border-zinc-800 pb-6 mb-6">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">Application Form</h1>
-        <p className="text-zinc-400 text-sm">
-          Applying to: <strong className="text-white font-semibold">{departmentNames.join(", ")}</strong>
-        </p>
+      {/* Editorial header */}
+      <div className="mb-10" style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "2rem" }}>
+        <p className="mono-label mb-3">Application Form</p>
+        <h1
+          className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight"
+          style={{ fontFamily: "var(--font-bricolage, system-ui)" }}
+        >
+          {departmentNames.join(" + ")}
+        </h1>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <section className="space-y-4">
-            <h2 className="text-xl font-bold text-zinc-200 border-b border-zinc-800 pb-2">About You</h2>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-10">
+          <section className="space-y-6">
+            {/* Section overline */}
+            <div style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "0.75rem" }}>
+              <p className="mono-label">§ 01 — About You</p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-7">
               <FormField
                 control={form.control}
                 name="Name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">Full Name</FormLabel>
+                    <FormLabel className="mono-label block mb-2">Full Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Jane Doe" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                      <Input
+                        {...field}
+                        placeholder="Jane Doe"
+                        className="field-underline"
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400 text-xs mt-1" />
                   </FormItem>
                 )}
               />
@@ -391,11 +410,15 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="RegistrationNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">Registration Number</FormLabel>
+                    <FormLabel className="mono-label block mb-2">Registration No.</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. 25BCE5612" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                      <Input
+                        {...field}
+                        placeholder="e.g. 25BCE5612"
+                        className="field-underline"
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400 text-xs mt-1" />
                   </FormItem>
                 )}
               />
@@ -405,23 +428,31 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="Gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">Gender</FormLabel>
+                    <FormLabel className="mono-label block mb-2">Gender</FormLabel>
                     <FormControl>
                       <select
                         {...field}
                         value={field.value || ""}
-                        className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-700"
+                        style={{
+                          width: "100%",
+                          background: "transparent",
+                          border: "none",
+                          borderBottom: "1px solid rgba(255,255,255,0.2)",
+                          borderRadius: 0,
+                          color: field.value ? "#ededed" : "rgba(255,255,255,0.25)",
+                          padding: "6px 0",
+                          fontSize: "14px",
+                          outline: "none",
+                        }}
                       >
-                        <option value="" disabled className="bg-zinc-900">
-                          Select Gender
-                        </option>
-                        <option value="Male" className="bg-zinc-900">Male</option>
-                        <option value="Female" className="bg-zinc-900">Female</option>
-                        <option value="Other" className="bg-zinc-900">Other</option>
-                        <option value="Prefer not to say" className="bg-zinc-900">Prefer not to say</option>
+                        <option value="" disabled style={{ background: "#111" }}>Select Gender</option>
+                        <option value="Male" style={{ background: "#111" }}>Male</option>
+                        <option value="Female" style={{ background: "#111" }}>Female</option>
+                        <option value="Other" style={{ background: "#111" }}>Other</option>
+                        <option value="Prefer not to say" style={{ background: "#111" }}>Prefer not to say</option>
                       </select>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400 text-xs mt-1" />
                   </FormItem>
                 )}
               />
@@ -431,11 +462,17 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="Email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">Email Address</FormLabel>
+                    <FormLabel className="mono-label block mb-2">Email Address</FormLabel>
                     <FormControl>
-                      <Input {...field} readOnly type="email" className="bg-zinc-900/50 border-zinc-800 text-zinc-400 cursor-not-allowed" />
+                      <Input
+                        {...field}
+                        readOnly
+                        type="email"
+                        className="field-underline"
+                        style={{ opacity: 0.4, cursor: "not-allowed" }}
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400 text-xs mt-1" />
                   </FormItem>
                 )}
               />
@@ -445,45 +482,57 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 name="Phone"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel className="text-zinc-300">Phone (WhatsApp)</FormLabel>
+                    <FormLabel className="mono-label block mb-2">Phone (WhatsApp)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="+919876543210" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
+                      <Input
+                        {...field}
+                        placeholder="10-digit number"
+                        className="field-underline"
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400 text-xs mt-1" />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div>
-              <FormField
-                control={form.control}
-                name="Why do you want to join Organization Name?"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-zinc-300">Why do you want to join Organization Name?</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} rows={4} placeholder="2-3 Sentences" className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="Why do you want to join Organization Name?"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="mono-label block mb-3">
+                    Why do you want to join Organization Name?
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      rows={4}
+                      placeholder="2-3 sentences…"
+                      className="field-underline resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-400 text-xs mt-1" />
+                </FormItem>
+              )}
+            />
           </section>
 
-          <hr className="border-zinc-800" />
+          <div className="editorial-rule" />
 
           {renderDepartmentQuestions(departmentNames[0], QuestionnaireData, form)}
           {departmentNames[1] && renderDepartmentQuestions(departmentNames[1], QuestionnaireData, form)}
 
-          <div className="pt-4 border-t border-zinc-800 flex justify-end">
+          <div
+            className="pt-6 flex justify-end"
+            style={{ borderTop: "var(--editorial-rule)" }}
+          >
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-white text-black hover:bg-zinc-200 font-bold px-8 py-3 text-base shadow-lg transition-all"
+              className="bg-white text-black hover:bg-zinc-200 font-bold px-8 py-3 text-sm tracking-wide transition-all"
             >
-              {isSubmitting ? "Submitting..." : "Submit Application"}
+              {isSubmitting ? "Submitting…" : "Submit Application"}
             </Button>
           </div>
         </form>
@@ -502,10 +551,14 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
   if (!questions.length) return null;
 
   return (
-    <section className="space-y-4 my-6">
-      <h2 className="text-xl font-bold text-zinc-200 border-b border-zinc-800 pb-2">{department} Questions</h2>
-      <div className="space-y-4">
-        {questions.map((question) => {
+    <section className="space-y-7 my-8">
+      {/* Section overline */}
+      <div style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "0.75rem" }}>
+        <p className="mono-label">{department} — Questions</p>
+      </div>
+
+      <div className="space-y-8">
+        {questions.map((question, idx) => {
           const isCompact = question.type === "short-text";
 
           return (
@@ -515,24 +568,42 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
                 name={question.name}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-300">{question.name}</FormLabel>
+                    {/* Question number + text in pull-quote style */}
+                    <FormLabel
+                      className="block mb-3"
+                      style={{
+                        fontStyle: "italic",
+                        color: "rgba(237,237,237,0.75)",
+                        fontSize: "15px",
+                        lineHeight: 1.6,
+                        fontWeight: 400,
+                      }}
+                    >
+                      <span
+                        className="mono-label mr-2"
+                        style={{ color: "rgba(255,255,255,0.3)", fontStyle: "normal" }}
+                      >
+                        {String(idx + 1).padStart(2, "0")}.
+                      </span>
+                      {question.name}
+                    </FormLabel>
                     <FormControl>
                       {isCompact ? (
                         <Input
                           {...field}
-                          placeholder={question.placeholder || "Answer..."}
-                          className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500"
+                          placeholder={question.placeholder || "Answer…"}
+                          className="field-underline"
                         />
                       ) : (
                         <Textarea
                           {...field}
                           rows={4}
-                          placeholder={question.placeholder || "2-3 sentences"}
-                          className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500"
+                          placeholder={question.placeholder || "2-3 sentences…"}
+                          className="field-underline resize-none"
                         />
                       )}
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400 text-xs mt-1" />
                   </FormItem>
                 )}
               />

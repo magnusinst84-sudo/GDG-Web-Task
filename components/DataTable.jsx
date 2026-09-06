@@ -1,5 +1,6 @@
 "use client";
 import { React, useState, useEffect, useMemo } from "react";
+import { reviews } from "@/constants";
 import {
   Table,
   TableBody,
@@ -138,20 +139,33 @@ const DataTable = ({ data }) => {
       {
         Header: "Shortlisted",
         accessor: "shortlisted",
-        Cell: ({ row }) => (
-          <button
-            onClick={() =>
-              handleShortlist(row.original._id, row.original.shortlisted)
-            }
-            className={`px-4 py-2 rounded w-[115px] ${
-              row.original.shortlisted
-                ? "bg-red-600 text-white"
-                : "bg-green-600 text-white"
-            }`}
-          >
-            {row.original.shortlisted ? "Unshortlist" : "Shortlist"}
-          </button>
-        ),
+        Cell: ({ row }) => {
+          const isShortlisted = row.original.shortlisted;
+          return (
+            <button
+              onClick={() =>
+                handleShortlist(row.original._id, isShortlisted)
+              }
+              style={{
+                fontFamily: "var(--font-mono), ui-monospace, monospace",
+                fontSize: "10px",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: isShortlisted ? "#6ee7a0" : "rgba(255,255,255,0.45)",
+                border: isShortlisted
+                  ? "1px solid rgba(110,231,160,0.35)"
+                  : "1px solid rgba(255,255,255,0.15)",
+                background: "transparent",
+                padding: "3px 10px",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "color 0.15s, border-color 0.15s",
+              }}
+            >
+              {isShortlisted ? "[ Unshortlist ]" : "[ Shortlist ]"}
+            </button>
+          );
+        },
       },
     ],
     [tableData]
@@ -289,19 +303,30 @@ const DataTable = ({ data }) => {
     [tableData]
   );
 
+  // Dept tone lookup for chips
+  const getDeptTone = (deptName) => {
+    return reviews.find((r) => r.name === deptName)?.tone ?? "rgba(255,255,255,0.3)";
+  };
+
   return (
-    <div className="bg-zinc-950 flex flex-col gap-3 p-4 rounded-xl border border-zinc-800/80 mt-5">
-      <div className="flex items-start border-none justify-start gap-3 p-1 overflow-x-scroll">
+    <div className="flex flex-col gap-0">
+      {/* ── Editorial toolbar ── */}
+      <div
+        className="flex items-center flex-wrap gap-2 py-4 mb-4 overflow-x-auto"
+        style={{ borderBottom: "var(--editorial-rule)" }}
+      >
+        {/* Search */}
         <Input
           value={globalFilter || ""}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Filter Data"
-          className="min-w-[300px]"
+          placeholder="Search applicants…"
+          className="field-underline min-w-[200px] max-w-[280px] text-sm"
         />
+        {/* Page size */}
         <Input
-          className="w-fit"
+          className="field-underline w-[90px] text-sm"
           onChange={(e) => handlePageSize(e)}
-          placeholder={"Page Size"}
+          placeholder="Page size"
         />
         <FilterDepartment filterFunc={filterFunc} />
         <FilterShortlisted filterFunc={shortlistedFilterFunc} />
@@ -309,34 +334,58 @@ const DataTable = ({ data }) => {
           recipients={selectedFlatRows.length}
           handleRowSelection={handleRowSelection}
         />
-        <Button onClick={() => window.location.reload()} className="flex gap-2">
-          <GrPowerReset />
-          Reset Filters
-        </Button>
-        <Button>
+        <button
+          onClick={() => window.location.reload()}
+          className="btn-editorial flex items-center gap-1.5"
+        >
+          <GrPowerReset size={11} />
+          Reset
+        </button>
+        <button className="btn-editorial">
           <CSVLink
             {...csv_link}
-            className="flex gap-2 justify-center items-center"
+            className="flex gap-1.5 items-center"
           >
-            <IoCloudDownloadOutline />
-            Download CSV
+            <IoCloudDownloadOutline size={12} />
+            CSV
           </CSVLink>
-        </Button>
+        </button>
       </div>
 
-      <div className="border rounded-md">
-        <Table {...getTableProps()}>
+      {/* ── Table ── */}
+      <div style={{ overflowX: "auto" }}>
+        <Table
+          {...getTableProps()}
+          style={{ borderCollapse: "collapse", width: "100%" }}
+        >
           <TableHeader>
             {headerGroups.map((hg) => (
-              <TableRow key={hg.id} {...hg.getHeaderGroupProps()}>
+              <TableRow
+                key={hg.id}
+                {...hg.getHeaderGroupProps()}
+                style={{ borderBottom: "var(--editorial-rule)" }}
+              >
                 {hg.headers.map((header) => (
                   <TableHead
                     key={header.id}
                     {...header.getHeaderProps(header.getSortByToggleProps())}
+                    style={{
+                      fontFamily: "var(--font-mono), ui-monospace, monospace",
+                      fontSize: "9px",
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "rgba(255,255,255,0.35)",
+                      padding: "10px 12px",
+                      whiteSpace: "nowrap",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      userSelect: "none",
+                    }}
                   >
                     <div className="inline-flex gap-1 items-center">
                       {header.render("Header")}
-                      <FaSortAmountDownAlt />
+                      <FaSortAmountDownAlt size={8} style={{ opacity: 0.4 }} />
                     </div>
                   </TableHead>
                 ))}
@@ -346,22 +395,70 @@ const DataTable = ({ data }) => {
           <TableBody {...getTableBodyProps()}>
             {page.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className="text-center py-8 text-gray-400">
-                  {data.length === 0
-                    ? "No applicants have registered yet."
-                    : "No applicants match your current filters."}
+                <TableCell
+                  colSpan={columns.length + 1}
+                  style={{
+                    textAlign: "center",
+                    padding: "3rem",
+                    borderBottom: "var(--editorial-rule)",
+                  }}
+                >
+                  <p className="mono-label">
+                    {data.length === 0
+                      ? "No applicants have registered yet."
+                      : "No applicants match your current filters."}
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
               page.map((row) => {
                 prepareRow(row);
                 return (
-                  <TableRow key={row.id} {...row.getRowProps()}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id} {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </TableCell>
-                    ))}
+                  <TableRow
+                    key={row.id}
+                    {...row.getRowProps()}
+                    style={{ borderBottom: "var(--editorial-rule)" }}
+                  >
+                    {row.cells.map((cell) => {
+                      const isDeptCell = cell.column.id === "Department";
+                      const deptTone = isDeptCell
+                        ? getDeptTone(cell.value)
+                        : null;
+
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          {...cell.getCellProps()}
+                          style={{
+                            padding: "10px 12px",
+                            fontSize: "12px",
+                            color: "rgba(237,237,237,0.75)",
+                            border: "none",
+                            whiteSpace: isDeptCell ? "nowrap" : undefined,
+                          }}
+                        >
+                          {isDeptCell ? (
+                            <span
+                              style={{
+                                fontFamily:
+                                  "var(--font-mono), ui-monospace, monospace",
+                                fontSize: "9px",
+                                letterSpacing: "0.1em",
+                                textTransform: "uppercase",
+                                color: deptTone,
+                                border: `1px solid ${deptTone}33`,
+                                padding: "2px 7px",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {cell.value}
+                            </span>
+                          ) : (
+                            cell.render("Cell")
+                          )}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 );
               })
@@ -370,16 +467,18 @@ const DataTable = ({ data }) => {
         </Table>
       </div>
 
-      <PaginationComp
-        pageIndex={pageIndex}
-        pages={pageOptions.length}
-        nextPage={nextPage}
-        canNext={canNextPage}
-        previousPage={previousPage}
-        canPrev={canPreviousPage}
-        goto={gotoPage}
-        pageCount={pageCount}
-      />
+      <div style={{ borderTop: "var(--editorial-rule)", paddingTop: "1rem", marginTop: "0.5rem" }}>
+        <PaginationComp
+          pageIndex={pageIndex}
+          pages={pageOptions.length}
+          nextPage={nextPage}
+          canNext={canNextPage}
+          previousPage={previousPage}
+          canPrev={canPreviousPage}
+          goto={gotoPage}
+          pageCount={pageCount}
+        />
+      </div>
     </div>
   );
 };

@@ -2,34 +2,40 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import PopupComp from "@/components/PopupComp";
 import { toast } from "sonner";
 import { reviews } from "@/constants";
 import { cn } from "@/lib/utils";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-bricolage-grotesque",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-space-grotesk",
-});
-
 import { useSubmissions } from "@/components/SubmissionsProvider";
 
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+});
+
 const departments = reviews;
+
+// Helper: hex color with alpha for inline style use
+const hexToRgba = (hex, alpha) => {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+};
 
 const DepartmentsListPage = () => {
   const router = useRouter();
   const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const { submittedDepartments, isLoadingSubmissions, submissionsError, refreshSubmissions } = useSubmissions();
+  const {
+    submittedDepartments,
+    isLoadingSubmissions,
+    submissionsError,
+    refreshSubmissions,
+  } = useSubmissions();
 
   // Component state for department selections and pagination
   const [selectedCount, setSelectedCount] = useState(0);
@@ -44,7 +50,7 @@ const DepartmentsListPage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupData, setPopupData] = useState(null);
 
-  // Track window scroll coordinates for responsive styling
+  // Track window scroll coordinates
   useEffect(() => {
     const handleScroll = () => {
       setScrollDepth(window.scrollY);
@@ -89,7 +95,8 @@ const DepartmentsListPage = () => {
 
     setPopupData({
       header: departmentName,
-      description: dept?.description || "No description available for this department.",
+      description:
+        dept?.description || "No description available for this department.",
       message: [
         `Application Status: ${
           isSubmitted
@@ -112,12 +119,16 @@ const DepartmentsListPage = () => {
     setLastClickedDepartment(departmentName);
 
     if (submittedDepartments.includes(departmentName)) {
-      toast.error(`You have already submitted an application for ${departmentName}.`);
+      toast.error(
+        `You have already submitted an application for ${departmentName}.`
+      );
       return;
     }
 
     if (remainingSlots <= 0) {
-      toast.error("You have already submitted the maximum allowed (2) applications.");
+      toast.error(
+        "You have already submitted the maximum allowed (2) applications."
+      );
       return;
     }
 
@@ -142,150 +153,321 @@ const DepartmentsListPage = () => {
     router.push(`/join/${selectedIds.join("/")}`);
   };
 
-  const DepartmentListItem = ({ department, index }) => {
+  // ── Department card component ───────────────────────────
+  const DepartmentCard = ({ department, featured = false }) => {
     const isSelected = selectedDepartments.includes(department.name);
     const isSubmitted = submittedDepartments.includes(department.name);
+    const accentColor = department.tone || "#8ab4f8";
 
     return (
       <div
-        key={`${department.name}-${index}`}
         className={cn(
-          "relative p-5 rounded-xl border transition-all duration-200 flex flex-col justify-between gap-4",
-          isSelected
-            ? "bg-zinc-900 border-white/40 ring-1 ring-white/20 shadow-lg"
-            : "bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900/40",
-          isSubmitted && "opacity-75 bg-zinc-900/30 border-zinc-800"
+          "relative flex flex-col justify-between transition-all duration-200",
+          "border-l-[3px]",
+          featured ? "p-7 sm:p-8" : "p-5 sm:p-6",
+          isSubmitted && "opacity-50"
         )}
+        style={{
+          background: isSelected
+            ? hexToRgba(accentColor, 0.06)
+            : "rgba(255,255,255,0.025)",
+          borderLeftColor: isSelected ? accentColor : "rgba(255,255,255,0.1)",
+          borderTop: "var(--editorial-rule)",
+          borderRight: "var(--editorial-rule)",
+          borderBottom: "var(--editorial-rule)",
+          boxShadow: isSelected
+            ? `0 0 0 1px ${hexToRgba(accentColor, 0.18)}`
+            : "none",
+          transition: "background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease",
+        }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
+        {/* Status badges */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Dept tone pip */}
+            <span
+              className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+              style={{ background: accentColor, opacity: 0.8 }}
+            />
+
+            {isSubmitted && (
+              <span
+                className="mono-label px-2 py-0.5"
+                style={{
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  color: "rgba(255,255,255,0.45)",
+                }}
+              >
+                Submitted ✓
+              </span>
+            )}
+            {isSelected && !isSubmitted && (
+              <span
+                className="mono-label px-2 py-0.5"
+                style={{
+                  border: `1px solid ${hexToRgba(accentColor, 0.5)}`,
+                  color: accentColor,
+                }}
+              >
+                Selected
+              </span>
+            )}
+          </div>
+
+          {/* Details button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDepartmentDetail(department.name);
+            }}
+            className="mono-label flex-shrink-0"
+            style={{
+              borderBottom: "1px solid rgba(255,255,255,0.2)",
+              paddingBottom: "1px",
+              color: "rgba(255,255,255,0.4)",
+              background: "none",
+              cursor: "pointer",
+              transition: "color 0.15s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = "rgba(255,255,255,0.85)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.color = "rgba(255,255,255,0.4)")
+            }
+          >
+            Details →
+          </button>
+        </div>
+
+        {/* Department name */}
+        <h3
+          className={cn(
+            "font-extrabold tracking-tight leading-none mb-3",
+            featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
+          )}
+          style={{
+            fontFamily: bricolage.style.fontFamily,
+            color: "#ededed",
+          }}
+        >
+          {department.name}
+        </h3>
+
+        {/* Description — pull-quote style */}
+        <p
+          className={cn(
+            "pull-quote leading-relaxed mb-5",
+            featured ? "text-sm sm:text-base" : "text-sm"
+          )}
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: featured ? 4 : 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {department.description}
+        </p>
+
+        {/* Checkbox — sole click target for selection */}
+        <div className="flex items-center gap-3 mt-auto">
+          <label
+            className={cn(
+              "flex items-center gap-2.5 cursor-pointer select-none",
+              isSubmitted && "cursor-not-allowed"
+            )}
+          >
             <input
               type="checkbox"
               disabled={isSubmitted}
               checked={isSelected}
               onChange={() => toggleDepartment(department.name)}
-              className="h-5 w-5 rounded border-zinc-700 bg-zinc-900 text-white focus:ring-zinc-600 focus:ring-offset-zinc-950 cursor-pointer disabled:cursor-not-allowed"
+              className="sr-only"
             />
-            <div>
-              <h3 className="font-bold text-lg text-white flex items-center gap-2">
-                {department.name}
-                {isSubmitted && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 font-normal">
-                    Submitted
-                  </span>
-                )}
-                {isSelected && !isSubmitted && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-white text-black font-semibold">
-                    Selected
-                  </span>
-                )}
-              </h3>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => openDepartmentDetail(department.name)}
-            className="text-xs font-medium text-zinc-400 hover:text-white underline underline-offset-4 transition-colors"
-          >
-            Details
-          </button>
+            {/* Custom checkbox */}
+            <span
+              className="inline-flex items-center justify-center w-4 h-4 flex-shrink-0 transition-all duration-150"
+              style={{
+                border: isSelected
+                  ? `2px solid ${accentColor}`
+                  : "2px solid rgba(255,255,255,0.25)",
+                background: isSelected
+                  ? hexToRgba(accentColor, 0.2)
+                  : "transparent",
+              }}
+            >
+              {isSelected && (
+                <svg
+                  width="8"
+                  height="6"
+                  viewBox="0 0 8 6"
+                  fill="none"
+                  strokeWidth="2"
+                  stroke={accentColor}
+                >
+                  <path d="M1 3L3 5L7 1" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </span>
+            <span
+              className="mono-label"
+              style={{ color: isSelected ? accentColor : "rgba(255,255,255,0.35)" }}
+            >
+              {isSubmitted ? "Submitted" : isSelected ? "Deselect" : "Select"}
+            </span>
+          </label>
         </div>
-
-        <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed">
-          {department.description}
-        </p>
       </div>
     );
   };
 
   return (
-    <main data-scroll-depth={scrollDepth} className="min-h-screen bg-black text-white flex flex-col justify-between">
+    <main
+      data-scroll-depth={scrollDepth}
+      className="min-h-screen bg-[#0a0a0a] text-white flex flex-col justify-between"
+    >
       <NavBar />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 w-full flex-grow">
-        {/* Loading Banner State */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 py-10 w-full flex-grow">
+
+        {/* ── Loading Banner State (logic untouched) ── */}
         {isLoadingSubmissions && (
-          <div className="p-4 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-lg mb-6 text-sm flex items-center gap-3">
-            <span className="h-4 w-4 rounded-full border-2 border-zinc-600 border-t-white animate-spin" />
-            Loading your application history...
+          <div
+            className="flex items-center gap-3 mb-6 py-3 px-4"
+            style={{ borderBottom: "var(--editorial-rule)" }}
+          >
+            <span className="h-3 w-3 rounded-full border border-white/30 border-t-white animate-spin flex-shrink-0" />
+            <span className="mono-label">Loading application history…</span>
           </div>
         )}
 
-        {/* Error Banner State with Retry Option */}
+        {/* ── Error Banner State with Retry (logic untouched) ── */}
         {submissionsError && (
-          <div className="p-4 bg-red-950/70 border border-red-800/80 text-red-200 rounded-lg mb-6 text-sm flex justify-between items-center gap-4">
-            <span>{submissionsError}</span>
+          <div
+            className="flex justify-between items-center gap-4 mb-6 py-3 px-4"
+            style={{
+              border: "1px solid rgba(239,68,68,0.3)",
+              background: "rgba(239,68,68,0.05)",
+            }}
+          >
+            <span className="text-red-300 text-sm">{submissionsError}</span>
             <button
               type="button"
               onClick={() => refreshSubmissions()}
-              className="px-3 py-1 bg-red-900 hover:bg-red-800 text-white rounded text-xs font-semibold transition-colors"
+              className="mono-label"
+              style={{
+                color: "rgba(252,165,165,0.8)",
+                borderBottom: "1px solid rgba(252,165,165,0.3)",
+                paddingBottom: "1px",
+                background: "none",
+                cursor: "pointer",
+              }}
             >
               Retry
             </button>
           </div>
         )}
 
-        <header className="mb-8 bg-zinc-950 p-6 rounded-2xl border border-zinc-800/80 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <p className="text-xs font-mono tracking-wider uppercase text-zinc-500">Step 01 · Select</p>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">Pick your departments</h1>
-            <p className="text-sm text-zinc-400 max-w-xl">
-              Select up to <strong className="text-white">two</strong> departments you wish to apply for.
+        {/* ── Page header ── */}
+        <header className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div>
+            <p
+              className="mono-label mb-3"
+              style={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              Step 01 · Select
+            </p>
+            <h1
+              className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-none"
+              style={{ fontFamily: bricolage.style.fontFamily }}
+            >
+              Pick your departments
+            </h1>
+            <p className="text-zinc-500 text-sm mt-3 max-w-md">
+              Select up to <strong className="text-zinc-300">two</strong>{" "}
+              departments you wish to apply for.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-t md:border-t-0 md:border-l border-zinc-800 pt-4 md:pt-0 md:pl-6">
-            <div className="text-left sm:text-right">
-              <span className="text-2xl font-bold text-white block">
-                {selectedCount} <span className="text-zinc-500 text-lg">/ 2</span>
+          {/* Selection counter + continue */}
+          <div
+            className="flex items-center gap-5 flex-shrink-0 sm:pb-1"
+            style={{ borderTop: "var(--editorial-rule)", paddingTop: "1rem" }}
+          >
+            <div>
+              <span
+                className="text-3xl font-bold text-white tabular-nums"
+                style={{ fontFamily: bricolage.style.fontFamily }}
+              >
+                {selectedCount}
               </span>
-              <span className="text-xs text-zinc-400">selected</span>
+              <span className="mono-label ml-1.5 text-zinc-500">/ 2</span>
+              <p className="mono-label mt-0.5">selected</p>
             </div>
 
             <button
               type="button"
               onClick={goToApplication}
               disabled={isContinueDisabled}
-              className={cn(
-                "px-6 py-3 rounded-lg text-sm font-bold transition-all duration-200 flex items-center gap-2",
+              className="btn-editorial"
+              style={
                 isContinueDisabled
-                  ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                  : "bg-white text-black hover:bg-zinc-200 shadow-lg hover:shadow-white/10"
-              )}
+                  ? { opacity: 0.3, cursor: "not-allowed" }
+                  : {}
+              }
             >
-              Continue to application →
+              Continue →
             </button>
           </div>
         </header>
 
+        {/* ── Department grid ── */}
         <section>
-          <h2 className="text-xl font-bold text-zinc-200 mb-4 tracking-tight">Available Departments</h2>
+          <p
+            className="mono-label mb-5"
+            style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "12px" }}
+          >
+            Available Departments ({computedDepartmentList.length})
+          </p>
 
-          {/* Empty Catalog State */}
+          {/* Empty Catalog State (logic untouched) */}
           {computedDepartmentList.length === 0 ? (
-            <p className="text-zinc-500 italic py-8 text-center bg-zinc-950 rounded-xl border border-zinc-900">
-              No departments are currently available for application.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {computedDepartmentList.map((department, index) => (
-                <DepartmentListItem
-                  key={department.name || index}
-                  department={department}
-                  index={index}
-                />
-              ))}
+            <div
+              className="py-16 text-center"
+              style={{ borderTop: "var(--editorial-rule)" }}
+            >
+              <p className="mono-label">
+                No departments are currently available for application.
+              </p>
             </div>
+          ) : (
+            <>
+              {/* Featured row — first 2 departments larger */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-px mb-px bg-white/[0.06]">
+                {computedDepartmentList.slice(0, 2).map((department) => (
+                  <div key={department.name} className="bg-[#0a0a0a]">
+                    <DepartmentCard department={department} featured />
+                  </div>
+                ))}
+              </div>
+
+              {/* Standard grid — remaining 10 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06]">
+                {computedDepartmentList.slice(2).map((department) => (
+                  <div key={department.name} className="bg-[#0a0a0a]">
+                    <DepartmentCard department={department} />
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </section>
       </div>
 
-      <PopupComp
-        isOpen={isPopupOpen}
-        onClose={closePopup}
-        PopupData={popupData}
-      />
+      {/* Popup — all data/logic untouched */}
+      <PopupComp isOpen={isPopupOpen} onClose={closePopup} PopupData={popupData} />
 
       <Footer />
     </main>

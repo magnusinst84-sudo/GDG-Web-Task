@@ -4,26 +4,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 93%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 93%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 93%;
+    --primary: 0 0% 93%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 93%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 93%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 83.1%;
-    --radius: 0.5rem;
+    --destructive-foreground: 0 0% 93%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 0 0% 60%;
+    --radius: 0.25rem;
+
+    /* Editorial design tokens */
+    --editorial-rule: 1px solid rgba(255, 255, 255, 0.08);
+    --editorial-surface: #111111;
+    --editorial-surface-2: #181818;
+    --editorial-accent: rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -32,7 +38,83 @@ body {
   padding: 0;
   background-color: #0a0a0a;
   color: #ededed;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Editorial utility classes ────────────────────────── */
 
+/* Thin horizontal rule divider */
+.editorial-rule {
+  border: 0;
+  border-top: var(--editorial-rule);
+  width: 100%;
+}
+
+/* Mono overline label — used for step indicators, metadata, section labels */
+.mono-label {
+  font-family: var(--font-mono), ui-monospace, "Cascadia Code", "Source Code Pro",
+    Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Pull-quote style description text */
+.pull-quote {
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(237, 237, 237, 0.65);
+  line-height: 1.65;
+}
+
+/* Minimal bordered editorial button */
+.btn-editorial {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 11px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ededed;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.btn-editorial:hover {
+  background: #ededed;
+  color: #0a0a0a;
+  border-color: #ededed;
+}
+.btn-editorial:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Underline-only form field override */
+.field-underline {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  color: #ededed !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
+}
+.field-underline:focus {
+  border-bottom-color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+}
+.field-underline::placeholder {
+  color: rgba(255, 255, 255, 0.25) !important;
+}

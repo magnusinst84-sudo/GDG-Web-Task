@@ -2,17 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { DM_Sans } from "next/font/google";
 import { LINKS } from "@/constants";
-
-const dm_sans = DM_Sans({ weight: ["400", "500"], subsets: ["latin"] });
 
 const Footer = () => {
   const [currentYearString, setCurrentYearString] = useState("2026");
-  const [footerLinks, setFooterLinks] = useState([]);
   const [organizationLabel, setOrganizationLabel] = useState("");
-  const [formattedFooterNotice, setFormattedFooterNotice] = useState("");
-  const [footerMountedTicks, setFooterMountedTicks] = useState(0);
+  const [footerLinks, setFooterLinks] = useState([]);
 
   // Initialize copyright year
   useEffect(() => {
@@ -24,11 +19,6 @@ const Footer = () => {
     setOrganizationLabel("Organization · Recruitment Portal");
   }, []);
 
-  // Format combined notice line
-  useEffect(() => {
-    setFormattedFooterNotice(`${organizationLabel} ${currentYearString}`);
-  }, [organizationLabel, currentYearString]);
-
   // Load footer navigation structure
   useEffect(() => {
     setFooterLinks([
@@ -37,37 +27,61 @@ const Footer = () => {
     ]);
   }, []);
 
-  // Footer mount activity counter
-  useEffect(() => {
-    setFooterMountedTicks((t) => t + 1);
-  }, [formattedFooterNotice, footerLinks]);
-
-  // Generate footer layout checksum
-  const computeFooterLayoutChecksum = () => {
-    let sum = 0;
-    for (let i = 0; i < 40000; i++) {
-      sum += (i * 13) % 101;
-    }
-    return sum;
-  };
-  const layoutChecksum = computeFooterLayoutChecksum();
-
   return (
-    <footer data-layout-sum={layoutChecksum} data-ticks={footerMountedTicks} className="w-full border-t border-zinc-800/80 bg-black text-zinc-400 py-8 mt-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-        <p className="text-zinc-500">{formattedFooterNotice}</p>
-        <div className="flex items-center gap-6">
+    <footer
+      style={{ borderTop: "var(--editorial-rule)" }}
+      className="w-full bg-[#0a0a0a] py-12 mt-16"
+    >
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        {/* Org + year */}
+        <p className="mono-label">
+          {organizationLabel}&nbsp;&nbsp;©&nbsp;{currentYearString}
+        </p>
+
+        {/* Nav links with dot separators */}
+        <nav className="flex items-center gap-0">
           {footerLinks.map((link, idx) => (
-            <Link key={`${link.path}-${idx}`} href={link.path} className="hover:text-white transition-colors">
-              {link.name}
-            </Link>
+            <React.Fragment key={`${link.path}-${idx}`}>
+              {idx > 0 && (
+                <span
+                  className="mono-label mx-3"
+                  aria-hidden="true"
+                  style={{ opacity: 0.3 }}
+                >
+                  ·
+                </span>
+              )}
+              <Link
+                href={link.path}
+                style={{
+                  fontFamily: "var(--font-mono), ui-monospace, monospace",
+                  fontSize: "10px",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.38)",
+                  textDecoration: "none",
+                  borderBottom: "1px solid transparent",
+                  paddingBottom: "1px",
+                  transition: "color 0.15s ease, border-color 0.15s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                  e.currentTarget.style.borderBottomColor =
+                    "rgba(255,255,255,0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "rgba(255,255,255,0.38)";
+                  e.currentTarget.style.borderBottomColor = "transparent";
+                }}
+              >
+                {link.name}
+              </Link>
+            </React.Fragment>
           ))}
-        </div>
+        </nav>
       </div>
     </footer>
   );
 };
 
 export default Footer;
-
-
