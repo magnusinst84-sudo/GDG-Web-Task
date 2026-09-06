@@ -143,7 +143,7 @@ A subsequent edit to `app/(pages)/admin/page.jsx` introduced a conditional `!isD
 
 ## 8. Known Open Items
 
-1. **Dark Theme Contrast**: The base theme is intentionally dark editorial (`#0a0a0a`); a full brightness/contrast pass was discussed but not executed.
-2. **Elevated Test Admin Accounts — Resolved**: An audit of Firestore identified 8 test-created accounts holding `role: "admin"` from automated script runs. All have since been revoked/removed; only `tanmaynair07@gmail.com` and few other accs were made with proper user as well as admin access.
+1. **Dark Theme Contrast**: The base theme is intentionally dark editorial (`#0a0a0a`); a full brightness/contrast pass was planned but not executed.
+2. **Elevated Test Admin Accounts — Resolved**: An audit of Firestore identified 8 test-created accounts holding `role: "admin"` from automated script runs. All have since been revoked/removed; only `tester@gmail.com` and few other accs were made with proper user as well as admin access.
 3. **Questionnaire Text**: Questionnaire strings in `constants/index.js` were cleaned up from garbled placeholder noise; some fields still reference "Organization Name" literally.
 4. **Verification Scripts**: Manual verification scripts (`Test-suite/check_db.js`, `Test-suite/test_batch2_full.js`, etc.) remain in the workspace under `Test-suite/` for verification reference.
