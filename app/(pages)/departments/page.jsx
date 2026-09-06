@@ -116,6 +116,7 @@ const DepartmentsListPage = () => {
 
     setPopupData({
       header: departmentName,
+      accentColor: dept?.tone,
       description:
         dept?.description || "No description available for this department.",
       message: [
@@ -533,7 +534,12 @@ const DepartmentsListPage = () => {
       </div>
 
       {/* Popup — all data/logic untouched */}
-      <PopupComp isOpen={isPopupOpen} onClose={closePopup} PopupData={popupData} />
+      <PopupComp
+        isOpen={isPopupOpen}
+        onClose={closePopup}
+        PopupData={popupData}
+        accentColor={popupData?.accentColor}
+      />
 
       <Footer />
     </main>
