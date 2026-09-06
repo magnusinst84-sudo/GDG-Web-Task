@@ -88,25 +88,26 @@ export default function MailComposer({ recipients, handleRowSelection }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" disabled={!recipients}>Send Email</Button>
+                <Button variant="outline" className="btn-editorial" disabled={!recipients}>
+                    Send Email ({recipients})
+                </Button>
             </DialogTrigger>
             <DialogContent
-                className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[75vw] bg-zinc-900 border-zinc-800 text-white overflow-x-hidden"
+                className="max-w-2xl w-[92vw] bg-[#0a0a0a] border-zinc-800 text-white p-6 overflow-x-hidden space-y-4"
             >
-                <DialogHeader>
-                    <DialogTitle>Send Custom Mail</DialogTitle>
-                    <DialogDescription>
-                        Send customized mails to {recipients} selected
-                        recipients.
+                <DialogHeader className="border-b border-zinc-800/80 pb-3">
+                    <DialogTitle className="font-serif text-xl tracking-tight text-white">Send Custom Mail</DialogTitle>
+                    <DialogDescription className="mono-label text-zinc-400">
+                        Send customized mails to {recipients} selected recipient{recipients === 1 ? "" : "s"}.
                     </DialogDescription>
                 </DialogHeader>
                 {recipients > 0 ? (
-                    <div className="flex flex-col gap-3 justify-between">
-                        <div className="flex flex-col gap-3">
-                            <div className="flex gap-3 items-center justify-evenly">
+                    <div className="flex flex-col gap-4 w-full">
+                        <div className="flex flex-col gap-3 w-full">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                                 {/* Subject */}
                                 <Input
-                                    className="max-w-[73vw]"
+                                    className="w-full bg-zinc-950 border-zinc-800 text-xs font-mono focus:border-zinc-500 rounded-none text-zinc-100 placeholder:text-zinc-500"
                                     placeholder="Subject"
                                     onChange={(e) =>
                                         setPayloadData({
@@ -136,21 +137,24 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                         }
                                     }}
                                 >
-                                    <SelectTrigger className="max-w-[73vw]">
-                                        <SelectValue placeholder="Templates" />
+                                    <SelectTrigger className="w-full bg-zinc-950 border-zinc-800 text-xs font-mono rounded-none text-zinc-100">
+                                        <SelectValue placeholder="Select Template" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
                                         {templateTypes.map((tmp_type) => (
-                                            <SelectItem key={tmp_type} value={tmp_type}>
+                                            <SelectItem key={tmp_type} value={tmp_type} className="text-xs font-mono focus:bg-zinc-800 focus:text-white">
                                                 {tmp_type}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="flex gap-1 pb-3 max-w-[71vw] overflow-x-scroll">
+                            {/* Rich text formatting toolbar */}
+                            <div className="flex flex-wrap gap-1 p-1.5 bg-zinc-950 border border-zinc-800 w-full max-h-36 overflow-y-auto">
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -166,16 +170,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleBold()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("bold")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Bold
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -191,16 +197,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleItalic()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("italic")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Italic
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -216,16 +224,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleStrike()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("strike")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Strike
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -241,16 +251,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleCode()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("code")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Code
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -258,11 +270,14 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .unsetAllMarks()
                                             .run()
                                     }
+                                    className="px-2 py-1 h-auto text-[11px] font-mono border border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white rounded-none"
                                 >
                                     Clear marks
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -270,11 +285,14 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .clearNodes()
                                             .run()
                                     }
+                                    className="px-2 py-1 h-auto text-[11px] font-mono border border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white rounded-none"
                                 >
                                     Clear nodes
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -282,16 +300,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .setParagraph()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("paragraph")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Paragraph
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -299,17 +319,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleHeading({ level: 1 })
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("heading", { level: 1 })
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Heading
                                 </Button>
-
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -317,16 +338,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleBulletList()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("bulletList")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Bullet list
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -334,16 +357,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleOrderedList()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("orderedList")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Ordered list
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -351,16 +376,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleCodeBlock()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("codeBlock")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Code block
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -368,16 +395,18 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .toggleBlockquote()
                                             .run()
                                     }
-                                    className={
+                                    className={`px-2 py-1 h-auto text-[11px] font-mono border rounded-none ${
                                         editor.isActive("blockquote")
-                                            ? "is-active"
-                                            : ""
-                                    }
+                                            ? "bg-zinc-800 border-zinc-600 text-white"
+                                            : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white"
+                                    }`}
                                 >
                                     Blockquote
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -385,11 +414,14 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .setHorizontalRule()
                                             .run()
                                     }
+                                    className="px-2 py-1 h-auto text-[11px] font-mono border border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white rounded-none"
                                 >
                                     Horizontal rule
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor
                                             .chain()
@@ -397,11 +429,14 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .setHardBreak()
                                             .run()
                                     }
+                                    className="px-2 py-1 h-auto text-[11px] font-mono border border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white rounded-none"
                                 >
                                     Hard break
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor.chain().focus().undo().run()
                                     }
@@ -413,11 +448,14 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .undo()
                                             .run()
                                     }
+                                    className="px-2 py-1 h-auto text-[11px] font-mono border border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white rounded-none"
                                 >
                                     Undo
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="ghost"
+                                    size="sm"
                                     onClick={() =>
                                         editor.chain().focus().redo().run()
                                     }
@@ -429,55 +467,60 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                             .redo()
                                             .run()
                                     }
+                                    className="px-2 py-1 h-auto text-[11px] font-mono border border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-white rounded-none"
                                 >
                                     Redo
                                 </Button>
                             </div>
-                            <EditorContent editor={editor} />
+                            <div className="w-full max-h-[260px] overflow-y-auto">
+                                <EditorContent editor={editor} />
+                            </div>
                         </div>
-                        <DialogFooter className="flex gap-3">
+                        <DialogFooter className="flex flex-row justify-end items-center gap-3 pt-3 border-t border-zinc-800/80 w-full">
                             {!confirm ? (
-                                <div className="flex gap-1 items-center justify-center">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setConfirm(true)}
-                                    >
-                                        Verify Mail
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setConfirm(true)}
+                                    className="btn-editorial text-xs"
+                                >
+                                    Verify Mail
+                                </Button>
                             ) : (
-                                <div className="flex gap-1 items-center justify-center">
-                                    <Button
-                                        variant="outline"
-                                        className="opacity-[40%] cursor-not-allowed text-gray-600 hover:opacity-[40%]"
-                                    >
-                                        Verified
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled
+                                    className="btn-editorial text-xs opacity-60 cursor-not-allowed text-emerald-400 border-emerald-500/40"
+                                >
+                                    ✓ Verified
+                                </Button>
                             )}
                             <Button
                                 type="submit"
+                                disabled={!confirm}
                                 onClick={() => {
                                     if (confirm) {
                                         handleRowSelection(payloadData);
                                         setConfirm(false);
                                     }
                                 }}
-                                className={
-                                    !confirm &&
-                                    "opacity-[40%] cursor-not-allowed text-gray-600 hover:opacity-[40%]"
-                                }
+                                className={`btn-editorial text-xs ${
+                                    !confirm
+                                        ? "opacity-40 cursor-not-allowed"
+                                        : "border-white text-white hover:bg-white hover:text-black"
+                                }`}
                             >
                                 Send Mail
                             </Button>
                         </DialogFooter>
                     </div>
                 ) : (
-                    <p>
-                        <p className="flex gap-3 items-center justify-start font-light text-md text-red-500">
-                            <CiWarning /> No recipients selected
+                    <div className="py-6 text-center">
+                        <p className="inline-flex gap-2 items-center justify-center font-mono text-xs text-red-400 border border-red-500/20 bg-red-950/20 px-4 py-2">
+                            <CiWarning size={14} /> No recipients selected
                         </p>
-                    </p>
+                    </div>
                 )}
             </DialogContent>
         </Dialog>
