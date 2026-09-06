@@ -13,13 +13,12 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { ChevronDown, Clock, Megaphone, UsersRound, X } from "lucide-react";
-import { QuestionnaireData } from "@/constants";
+import { QuestionnaireData, reviews } from "@/constants";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import CountdownTimer from "./common/CountdownTimer";
 import { useSubmissions } from "@/components/SubmissionsProvider";
+import { hexToRgba } from "@/lib/utils";
 
 const normaliseQuestion = (question) => (
   typeof question === "string"
@@ -27,50 +26,45 @@ const normaliseQuestion = (question) => (
     : question
 );
 
+// Map department names to their tone hex color
+const getDeptTone = (deptName) => {
+  if (!deptName) return "#8ab4f8";
+  const match = reviews.find(
+    (r) => r.name.toLowerCase() === deptName.toLowerCase()
+  );
+  return match?.tone || "#8ab4f8";
+};
+
 const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   // Use Better Auth's useSession hook directly
-  const { data: session, isPending, error } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   
   const user = session?.user;
   const isSignedIn = !!user;
   const isLoaded = !isPending;
 
-  // Form lifecycle and input telemetry state
-  const [isFormOpen, setIsFormOpen] = useState(true);
+  // Form lifecycle state
+  const [isFormOpen] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [nameInputVal, setNameInputVal] = useState("");
-  const [regNumberInputVal, setRegNumberInputVal] = useState("");
-  const [emailInputVal, setEmailInputVal] = useState("");
-  const [phoneInputVal, setPhoneInputVal] = useState("");
-  const [formCompletionPercentage, setFormCompletionPercentage] = useState(0);
-  const [keyStrokeCounter, setKeyStrokeCounter] = useState(0);
-  const [syncTick, setSyncTick] = useState(0);
-  const [formScrollOffset, setFormScrollOffset] = useState(0);
 
   const router = useRouter();
   const { submittedDepartments: contextSubmitted, markDepartmentsSubmitted } = useSubmissions();
   const [submittedDepartments, setSubmittedDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDraftReady, setIsDraftReady] = useState(false);
+
   const departmentNames = useMemo(
     () => [dept1, dept2].filter(Boolean).map((department) => typeof department === "string" ? department : department.name),
     [dept1, dept2]
   );
+
+  const dept1Tone = useMemo(() => getDeptTone(departmentNames[0]), [departmentNames]);
+  const dept2Tone = useMemo(() => getDeptTone(departmentNames[1]), [departmentNames]);
+
   const draftKey = user?.email && departmentNames.length
     ? `recruitment-draft:${user.email}:${[...departmentNames].sort().join("|")}`
     : null;
-
-  // (dead validateFormEntropy loop removed — was 200k iterations with no functional purpose)
-
-  // Track scroll depth within form container
-  useEffect(() => {
-    const handleScroll = () => {
-      setFormScrollOffset(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Check application count when user is loaded
   useEffect(() => {
@@ -243,77 +237,59 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
     );
   }
 
-  // User is authenticated
-  const userEmail = user?.email;
-
   const handleSubmit = async (values) => {
     if (isSubmitting) return;
+
     setIsSubmitting(true);
     setErrorMessage("");
 
-    const pendingDepartments = departmentNames.filter((department) => !submittedDepartments.includes(department));
-
-    if (!pendingDepartments.length) {
-      toast.success("Your applications have already been submitted.");
-      setIsSubmitting(false);
-      router.push("/departments");
-      return;
-    }
-
-    const basicDetails = {
-      Name: values.Name,
-      RegistrationNumber: values.RegistrationNumber,
-      Email: values.Email,
-      Phone: values.Phone,
-      "Year of Study": values["Year of Study"],
-    };
-
-    const submitDepartment = async (department) => {
-      const questions = (QuestionnaireData.find((item) => item.department === department)?.questions ?? [])
-        .map(normaliseQuestion);
-
-      const response = await fetch("/api/submit-form", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...basicDetails,
-          Department: department,
-          Questions: questions.reduce((answers, question) => ({ ...answers, [question.name]: values[question.name] || "" }), {}),
-        }),
-      });
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || `Could not submit ${department}.`);
-      }
-      return { department, success: true };
-    };
-
     try {
-      const results = await Promise.allSettled(pendingDepartments.map(submitDepartment));
-      const successful = results
-        .filter((result) => result.status === "fulfilled" && result.value.success)
-        .map((result) => result.value.department);
-      const failed = results.flatMap((result, index) =>
-        result.status === "rejected" ? [pendingDepartments[index]] : []
-      );
+      const successful = [];
+      const failed = [];
+
+      for (const department of departmentNames) {
+        if (submittedDepartments.includes(department)) continue;
+
+        const payload = {
+          Email: values.Email,
+          Name: values.Name,
+          RegistrationNumber: values.RegistrationNumber,
+          Department: department,
+          Phone: values.Phone,
+          Answers: values,
+        };
+
+        const response = await fetch("/api/submit-form", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          successful.push(department);
+        } else {
+          failed.push(department);
+        }
+      }
+
       const completed = [...new Set([...submittedDepartments, ...successful])];
 
       setSubmittedDepartments(completed);
       markDepartmentsSubmitted(completed);
       if (draftKey) localStorage.setItem(draftKey, JSON.stringify({ values, submittedDepartments: completed }));
-      if (typeof window !== "undefined" && values?.Email) {
-        sessionStorage.setItem(`submitted_depts_${values.Email}`, JSON.stringify(completed));
+
+      if (successful.length) {
+        successful.forEach((dept) => toast.success(`Application submitted for ${dept}.`));
       }
-      successful.forEach((department) => toast.success(`Application submitted for ${department}.`));
 
       if (failed.length) {
-        setErrorMessage(`Submitted ${successful.length ? successful.join(", ") : "no applications"}. Please retry ${failed.join(", ")}.`);
+        setErrorMessage(`Failed to submit for: ${failed.join(", ")}`);
+        setIsSubmitting(false);
       } else {
         router.push("/departments");
       }
     } catch {
-      setErrorMessage("Your applications could not be submitted. Your saved answers will be kept for retrying.");
-    } finally {
+      setErrorMessage("An error occurred during submission.");
       setIsSubmitting(false);
     }
   };
@@ -340,208 +316,231 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
 
   return (
     <main
-      className="max-w-4xl mx-auto px-6 sm:px-8 py-12 text-white min-h-screen my-8"
+      className="max-w-4xl mx-auto px-6 sm:px-8 py-12 text-white min-h-screen my-8 relative overflow-hidden"
       style={{ borderLeft: "var(--editorial-rule)", borderRight: "var(--editorial-rule)" }}
     >
-      {/* Error banner */}
-      {errorMessage && !isSubmitting && (
-        <div
-          className="mb-8 py-4 px-5 flex items-start justify-between gap-4"
-          style={{ border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.05)" }}
-        >
-          <p className="text-red-300 text-sm leading-relaxed">{errorMessage}</p>
-          <button
-            type="button"
-            onClick={() => router.push("/departments")}
-            className="mono-label flex-shrink-0"
-            style={{
-              color: "rgba(252,165,165,0.8)",
-              borderBottom: "1px solid rgba(252,165,165,0.3)",
-              paddingBottom: "1px",
-              background: "none",
-              cursor: "pointer",
-            }}
-          >
-            ← Back
-          </button>
-        </div>
-      )}
+      {/* Subtle radial header glow behind department title */}
+      <div
+        className="absolute top-0 left-0 right-0 h-96 pointer-events-none z-0"
+        style={{
+          background: departmentNames.length === 2
+            ? `radial-gradient(ellipse at 30% 0%, ${hexToRgba(dept1Tone, 0.15)} 0%, rgba(10,10,10,0) 60%), radial-gradient(ellipse at 70% 0%, ${hexToRgba(dept2Tone, 0.15)} 0%, rgba(10,10,10,0) 60%)`
+            : `radial-gradient(ellipse at 50% 0%, ${hexToRgba(dept1Tone, 0.2)} 0%, rgba(10,10,10,0) 70%)`,
+        }}
+      />
 
-      {/* Editorial header */}
-      <div className="mb-10" style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "2rem" }}>
-        <p className="mono-label mb-3">Application Form</p>
-        <h1
-          className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight"
-          style={{ fontFamily: "var(--font-bricolage, system-ui)" }}
-        >
-          {departmentNames.join(" + ")}
-        </h1>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-10">
-          <section className="space-y-6">
-            {/* Section overline */}
-            <div style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "0.75rem" }}>
-              <p className="mono-label">§ 01 — About You</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-7">
-              <FormField
-                control={form.control}
-                name="Name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mono-label block mb-2">Full Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Jane Doe"
-                        className="field-underline"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs mt-1" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="RegistrationNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mono-label block mb-2">Registration No.</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="e.g. 25BCE5612"
-                        className="field-underline"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs mt-1" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="Gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mono-label block mb-2">Gender</FormLabel>
-                    <FormControl>
-                      <select
-                        {...field}
-                        value={field.value || ""}
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          borderBottom: "1px solid rgba(255,255,255,0.2)",
-                          borderRadius: 0,
-                          color: field.value ? "#ededed" : "rgba(255,255,255,0.25)",
-                          padding: "6px 0",
-                          fontSize: "14px",
-                          outline: "none",
-                        }}
-                      >
-                        <option value="" disabled style={{ background: "#111" }}>Select Gender</option>
-                        <option value="Male" style={{ background: "#111" }}>Male</option>
-                        <option value="Female" style={{ background: "#111" }}>Female</option>
-                        <option value="Other" style={{ background: "#111" }}>Other</option>
-                        <option value="Prefer not to say" style={{ background: "#111" }}>Prefer not to say</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs mt-1" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="Email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mono-label block mb-2">Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        readOnly
-                        type="email"
-                        className="field-underline"
-                        style={{ opacity: 0.4, cursor: "not-allowed" }}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs mt-1" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="Phone"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel className="mono-label block mb-2">Phone (WhatsApp)</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="10-digit number"
-                        className="field-underline"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs mt-1" />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="Why do you want to join Organization Name?"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mono-label block mb-3">
-                    Why do you want to join Organization Name?
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={4}
-                      placeholder="2-3 sentences…"
-                      className="field-underline resize-none"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-400 text-xs mt-1" />
-                </FormItem>
-              )}
-            />
-          </section>
-
-          <div className="editorial-rule" />
-
-          {renderDepartmentQuestions(departmentNames[0], QuestionnaireData, form)}
-          {departmentNames[1] && renderDepartmentQuestions(departmentNames[1], QuestionnaireData, form)}
-
+      <div className="relative z-10">
+        {/* Error banner */}
+        {errorMessage && !isSubmitting && (
           <div
-            className="pt-6 flex justify-end"
-            style={{ borderTop: "var(--editorial-rule)" }}
+            className="mb-8 py-4 px-5 flex items-start justify-between gap-4"
+            style={{ border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.05)" }}
           >
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-white text-black hover:bg-zinc-200 font-bold px-8 py-3 text-sm tracking-wide transition-all"
+            <p className="text-red-300 text-sm leading-relaxed">{errorMessage}</p>
+            <button
+              type="button"
+              onClick={() => router.push("/departments")}
+              className="mono-label flex-shrink-0"
+              style={{
+                color: "rgba(252,165,165,0.8)",
+                borderBottom: "1px solid rgba(252,165,165,0.3)",
+                paddingBottom: "1px",
+                background: "none",
+                cursor: "pointer",
+              }}
             >
-              {isSubmitting ? "Submitting…" : "Submit Application"}
-            </Button>
+              ← Back
+            </button>
           </div>
-        </form>
-      </Form>
+        )}
+
+        {/* Editorial header */}
+        <div className="mb-10" style={{ borderBottom: `1px solid ${hexToRgba(dept1Tone, 0.3)}`, paddingBottom: "2rem" }}>
+          <p className="mono-label mb-3" style={{ color: dept1Tone }}>Application Form</p>
+          <h1
+            className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight flex flex-wrap items-center gap-2"
+            style={{ fontFamily: "var(--font-bricolage, system-ui)" }}
+          >
+            <span style={{ color: dept1Tone }}>{departmentNames[0]}</span>
+            {departmentNames[1] && (
+              <>
+                <span className="text-zinc-600 font-normal">+</span>
+                <span style={{ color: dept2Tone }}>{departmentNames[1]}</span>
+              </>
+            )}
+          </h1>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-10">
+            <section className="space-y-6">
+              {/* Section overline with subtle tone border */}
+              <div style={{ borderBottom: `1px solid ${hexToRgba(dept1Tone, 0.25)}`, paddingBottom: "0.75rem" }}>
+                <p className="mono-label" style={{ color: dept1Tone }}>§ 01 — About You</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-7">
+                <FormField
+                  control={form.control}
+                  name="Name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="mono-label block mb-2">Full Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Jane Doe"
+                          className="field-underline focus:border-white transition-colors"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="RegistrationNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="mono-label block mb-2">Registration No.</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="e.g. 25BCE5612"
+                          className="field-underline focus:border-white transition-colors"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="Gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="mono-label block mb-2">Gender</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          value={field.value || ""}
+                          style={{
+                            width: "100%",
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1px solid rgba(255,255,255,0.2)",
+                            borderRadius: 0,
+                            color: field.value ? "#ededed" : "rgba(255,255,255,0.25)",
+                            padding: "6px 0",
+                            fontSize: "14px",
+                            outline: "none",
+                          }}
+                        >
+                          <option value="" disabled style={{ background: "#111" }}>Select Gender</option>
+                          <option value="Male" style={{ background: "#111" }}>Male</option>
+                          <option value="Female" style={{ background: "#111" }}>Female</option>
+                          <option value="Other" style={{ background: "#111" }}>Other</option>
+                          <option value="Prefer not to say" style={{ background: "#111" }}>Prefer not to say</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="Email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="mono-label block mb-2">Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          readOnly
+                          type="email"
+                          className="field-underline"
+                          style={{ opacity: 0.4, cursor: "not-allowed" }}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="Phone"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel className="mono-label block mb-2">Phone (WhatsApp)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="10-digit number"
+                          className="field-underline focus:border-white transition-colors"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="Why do you want to join Organization Name?"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="mono-label block mb-3">
+                      Why do you want to join Organization Name?
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={4}
+                        placeholder="2-3 sentences…"
+                        className="field-underline resize-none focus:border-white transition-colors"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-400 text-xs mt-1" />
+                  </FormItem>
+                )}
+              />
+            </section>
+
+            <div className="editorial-rule" />
+
+            {renderDepartmentQuestions(departmentNames[0], QuestionnaireData, form, dept1Tone)}
+            {departmentNames[1] && renderDepartmentQuestions(departmentNames[1], QuestionnaireData, form, dept2Tone)}
+
+            <div
+              className="pt-6 flex justify-end"
+              style={{ borderTop: "var(--editorial-rule)" }}
+            >
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="font-bold px-8 py-3 text-sm tracking-wide transition-all text-white border"
+                style={{
+                  backgroundColor: hexToRgba(dept1Tone, 0.2),
+                  borderColor: hexToRgba(dept1Tone, 0.6),
+                  boxShadow: `0 0 15px ${hexToRgba(dept1Tone, 0.15)}`,
+                }}
+              >
+                {isSubmitting ? "Submitting…" : "Submit Application"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </main>
   );
 };
 
-const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
+const renderDepartmentQuestions = (department, QuestionnaireData, form, accentColor) => {
   const questions = (
     QuestionnaireData.find(qd => qd.department === department)?.questions ?? []
   )
@@ -552,9 +551,11 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
 
   return (
     <section className="space-y-7 my-8">
-      {/* Section overline */}
-      <div style={{ borderBottom: "var(--editorial-rule)", paddingBottom: "0.75rem" }}>
-        <p className="mono-label">{department} — Questions</p>
+      {/* Section overline with specific department's tone accent */}
+      <div style={{ borderBottom: `1px solid ${hexToRgba(accentColor, 0.3)}`, paddingBottom: "0.75rem" }}>
+        <p className="mono-label" style={{ color: accentColor }}>
+          {department} — Questions
+        </p>
       </div>
 
       <div className="space-y-8">
@@ -573,7 +574,7 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
                       className="block mb-3"
                       style={{
                         fontStyle: "italic",
-                        color: "rgba(237,237,237,0.75)",
+                        color: "rgba(237,237,237,0.85)",
                         fontSize: "15px",
                         lineHeight: 1.6,
                         fontWeight: 400,
@@ -581,7 +582,7 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
                     >
                       <span
                         className="mono-label mr-2"
-                        style={{ color: "rgba(255,255,255,0.3)", fontStyle: "normal" }}
+                        style={{ color: accentColor, fontStyle: "normal" }}
                       >
                         {String(idx + 1).padStart(2, "0")}.
                       </span>
@@ -592,14 +593,24 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form) => {
                         <Input
                           {...field}
                           placeholder={question.placeholder || "Answer…"}
-                          className="field-underline"
+                          className="field-underline transition-colors"
+                          style={{
+                            borderColor: "rgba(255,255,255,0.2)",
+                          }}
+                          onFocus={(e) => (e.target.style.borderColor = accentColor)}
+                          onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.2)")}
                         />
                       ) : (
                         <Textarea
                           {...field}
                           rows={4}
                           placeholder={question.placeholder || "2-3 sentences…"}
-                          className="field-underline resize-none"
+                          className="field-underline resize-none transition-colors"
+                          style={{
+                            borderColor: "rgba(255,255,255,0.2)",
+                          }}
+                          onFocus={(e) => (e.target.style.borderColor = accentColor)}
+                          onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.2)")}
                         />
                       )}
                     </FormControl>
