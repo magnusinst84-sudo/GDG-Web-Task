@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Recruitment Portal — Technical Architecture & Audit Report
 
 A Next.js 14 App Router recruitment portal utilizing Google Cloud Firestore via `firebase-admin` for server-side data persistence and `better-auth` for authentication.
@@ -153,3 +154,6 @@ Applied a dark editorial magazine theme across the application:
 3. **Questionnaire Text**: Questionnaire strings in `constants/index.js` were cleaned up from garbled placeholder noise; some fields still reference "Organization Name" literally.
 4. **Verification Scripts**: Manual verification scripts (`scratch/check_db.js`, `scratch/test_batch2_full.js`, etc.) remain in the workspace for verification reference.
 
+=======
+# GDG-Web-Task
+>>>>>>> origin/main
