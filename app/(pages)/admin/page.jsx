@@ -12,10 +12,7 @@ export default async function AdminPage() {
     headers: await headers(),
   });
 
-  const isDev = process.env.NODE_ENV === "development";
-
-  // Server-side session and role check BEFORE database access
-  if (!isDev && (!session?.user || session.user.role !== "admin")) {
+  if (!session?.user || session.user.role !== "admin") {
     return (
       <main className="min-h-screen bg-[#0a0a0a] text-white">
         <NavBar />
@@ -38,30 +35,6 @@ export default async function AdminPage() {
     }));
   } catch (e) {
     console.error("Firestore read error in admin page:", e);
-  }
-
-  // Fallback sample applicants for dev testing if DB is empty
-  if (isDev && applicants.length === 0) {
-    applicants = [
-      {
-        _id: "demo-1",
-        Name: "Aarav Mehta",
-        RegistrationNumber: "21BCE1001",
-        Email: "aarav.mehta@example.com",
-        Phone: "9876543210",
-        Department: "Web Development",
-        shortlisted: false,
-      },
-      {
-        _id: "demo-2",
-        Name: "Ishita Sharma",
-        RegistrationNumber: "21ECE1002",
-        Email: "ishita.sharma@example.com",
-        Phone: "9876543211",
-        Department: "Design",
-        shortlisted: true,
-      },
-    ];
   }
 
   return (

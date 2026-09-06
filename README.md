@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Recruitment Portal — Technical Architecture & Audit Report
 
 A Next.js 14 App Router recruitment portal utilizing Google Cloud Firestore via `firebase-admin` for server-side data persistence and `better-auth` for authentication.
@@ -138,22 +137,13 @@ Applied a dark editorial magazine theme across the application:
 
 ---
 
-## 7. Known Open Items
+### 7. Dev-Mode Auth Bypass Regression
+A subsequent edit to `app/(pages)/admin/page.jsx` introduced a conditional `!isDev &&` guard around the admin auth check, causing the entire session/role check to be skipped whenever `NODE_ENV === "development"` — silently reintroducing the exact PII leak described in Section 1, but only during local dev testing (i.e. every `npm run dev` session, including all manual testing performed this round). Caught via direct code review, not automated testing. Fixed by removing the `isDev` bypass entirely so the auth check is unconditional regardless of environment. A related unused dev-only demo-data fallback (fake sample applicants shown when Firestore is empty) was also removed since it was dead code once real applicant data existed.
+
+
+## 8. Known Open Items
 
 1. **Dark Theme Contrast**: The base theme is intentionally dark editorial (`#0a0a0a`); a full brightness/contrast pass was discussed but not executed.
-2. **Elevated Test Admin Accounts**: An audit of Firestore identified 8 test-created accounts currently holding `role: "admin"` from automated script runs:
-   - `admin_real_1788628189444@example.com`
-   - `admin_full_1788628242195@example.com`
-   - `admin_csv_1788631486405@example.com`
-   - `applicant_1788628176690@example.com`
-   - `val_user_1788631437234@example.com`
-   - `admin_correct_1788628283177@example.com`
-   - `admin_reauth_1788628215969@example.com`
-   - `admin_test@vit.ac.in` (legacy `user` collection)
-   Only `tanmaynair07@gmail.com` is the authentic admin account. Role revocation awaits administrative confirmation.
+2. **Elevated Test Admin Accounts — Resolved**: An audit of Firestore identified 8 test-created accounts holding `role: "admin"` from automated script runs. All have since been revoked/removed; only `tanmaynair07@gmail.com` and few other accs were made with proper user as well as admin access.
 3. **Questionnaire Text**: Questionnaire strings in `constants/index.js` were cleaned up from garbled placeholder noise; some fields still reference "Organization Name" literally.
-4. **Verification Scripts**: Manual verification scripts (`scratch/check_db.js`, `scratch/test_batch2_full.js`, etc.) remain in the workspace for verification reference.
-
-=======
-# GDG-Web-Task
->>>>>>> origin/main
+4. **Verification Scripts**: Manual verification scripts (`Test-suite/check_db.js`, `Test-suite/test_batch2_full.js`, etc.) remain in the workspace under `Test-suite/` for verification reference.
