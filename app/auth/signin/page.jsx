@@ -2,17 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bricolage_Grotesque, Space_Grotesk } from "next/font/google";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Bricolage_Grotesque } from "next/font/google";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import DWASFWLoader from "@/components/GDGLoader";
@@ -21,12 +11,6 @@ const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-bricolage-grotesque",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-space-grotesk",
 });
 
 export default function SignInPage() {
@@ -51,9 +35,11 @@ export default function SignInPage() {
 
   if (session?.user) {
     return (
-      <div className="min-h-screen bg-[#0d0d11] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center text-white">
-          <p className="text-sm text-zinc-400">Redirecting...</p>
+          <p className="mono-label" style={{ color: "rgba(255,255,255,0.4)" }}>
+            REDIRECTING...
+          </p>
         </div>
       </div>
     );
@@ -108,78 +94,176 @@ export default function SignInPage() {
   };
 
   return (
-    <main style={{ padding: "20px", maxWidth: "400px", margin: "40px auto" }}>
-      <h1>Recruitment 2026</h1>
-      <p>Candidate Portal</p>
+    <main
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
+      style={{ background: "#0a0a0a" }}
+    >
+      {/* Background ambient radial gradient glows */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "10%",
+          left: "15%",
+          width: "50%",
+          height: "60%",
+          background:
+            "radial-gradient(ellipse at center, rgba(56,189,248,0.12) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: "15%",
+          right: "15%",
+          width: "45%",
+          height: "50%",
+          background:
+            "radial-gradient(ellipse at center, rgba(168,85,247,0.14) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
 
-      <div>
-        <button
-          type="button"
-          onClick={() => setMode("signin")}
-          disabled={mode === "signin"}
+      {/* Main Container Card */}
+      <div
+        className="relative z-10 w-full max-w-md p-8 sm:p-10"
+        style={{
+          background: "rgba(18, 18, 18, 0.75)",
+          backdropFilter: "blur(12px)",
+          border: "var(--editorial-rule)",
+        }}
+      >
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <span
+            className="mono-label block mb-2"
+            style={{ color: "rgba(255,255,255,0.4)" }}
+          >
+            RECRUITMENT 2026 · CANDIDATE PORTAL
+          </span>
+          <h1
+            className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight"
+            style={{ fontFamily: bricolageGrotesque.style.fontFamily }}
+          >
+            {mode === "signin" ? "Sign In" : "Create Account"}
+          </h1>
+        </div>
+
+        {/* Mode Switcher Tabs */}
+        <div
+          className="grid grid-cols-2 gap-px mb-8"
+          style={{
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.1)",
+          }}
         >
-          Sign In
-        </button>
-        {" | "}
-        <button
-          type="button"
-          onClick={() => setMode("signup")}
-          disabled={mode === "signup"}
-        >
-          Create Account
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => setMode("signin")}
+            className="mono-label py-2.5 text-center transition-colors"
+            style={{
+              background: mode === "signin" ? "#0a0a0a" : "transparent",
+              color: mode === "signin" ? "#ffffff" : "rgba(255,255,255,0.4)",
+              fontWeight: mode === "signin" ? "600" : "400",
+            }}
+          >
+            SIGN IN
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("signup")}
+            className="mono-label py-2.5 text-center transition-colors"
+            style={{
+              background: mode === "signup" ? "#0a0a0a" : "transparent",
+              color: mode === "signup" ? "#ffffff" : "rgba(255,255,255,0.4)",
+              fontWeight: mode === "signup" ? "600" : "400",
+            }}
+          >
+            CREATE ACCOUNT
+          </button>
+        </div>
 
-      <hr />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {mode === "signup" && (
+            <div>
+              <label
+                htmlFor="name"
+                className="mono-label block mb-2"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+              >
+                FULL NAME
+              </label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Jane Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="input-editorial w-full px-0 py-2 bg-transparent border-b border-white/20 text-white placeholder-zinc-600 focus:outline-none focus:border-white transition-colors"
+              />
+            </div>
+          )}
 
-      <h2>{mode === "signin" ? "Sign In" : "Create Account"}</h2>
-
-      <form onSubmit={handleSubmit}>
-        {mode === "signup" && (
-          <div style={{ marginBottom: "12px" }}>
-            <label htmlFor="name">Full Name: </label>
-            <br />
+          <div>
+            <label
+              htmlFor="email"
+              className="mono-label block mb-2"
+              style={{ color: "rgba(255,255,255,0.6)" }}
+            >
+              EMAIL ADDRESS
+            </label>
             <input
-              id="name"
-              type="text"
-              placeholder="Jane Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
+              className="input-editorial w-full px-0 py-2 bg-transparent border-b border-white/20 text-white placeholder-zinc-600 focus:outline-none focus:border-white transition-colors"
             />
           </div>
-        )}
 
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="email">Email Address: </label>
-          <br />
-          <input
-            id="email"
-            type="email"
-            placeholder="name@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="mono-label block mb-2"
+              style={{ color: "rgba(255,255,255,0.6)" }}
+            >
+              PASSWORD
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="input-editorial w-full px-0 py-2 bg-transparent border-b border-white/20 text-white placeholder-zinc-600 focus:outline-none focus:border-white transition-colors"
+            />
+          </div>
 
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="password">Password: </label>
-          <br />
-          <input
-            id="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Processing..." : mode === "signin" ? "Sign In" : "Create Account"}
-        </button>
-      </form>
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn-editorial w-full justify-center"
+              style={submitting ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+            >
+              {submitting
+                ? "PROCESSING..."
+                : mode === "signin"
+                ? "SIGN IN →"
+                : "CREATE ACCOUNT →"}
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
   );
 }

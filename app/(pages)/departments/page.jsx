@@ -8,8 +8,37 @@ import Footer from "@/components/Footer";
 import PopupComp from "@/components/PopupComp";
 import { toast } from "sonner";
 import { reviews } from "@/constants";
-import { cn } from "@/lib/utils";
+import { cn, hexToRgba } from "@/lib/utils";
+import {
+  Code2,
+  Palette,
+  Database,
+  Smartphone,
+  Layout,
+  Cloud,
+  Box,
+  Megaphone,
+  Briefcase,
+  Globe,
+  Gamepad2,
+  Trophy,
+} from "lucide-react";
 import { useSubmissions } from "@/components/SubmissionsProvider";
+
+const DEPARTMENT_ICONS = {
+  "Management": Briefcase,
+  "Publicity": Megaphone,
+  "Outreach": Globe,
+  "UI/UX": Layout,
+  "Creatives / Design": Palette,
+  "Web Dev": Code2,
+  "App Dev": Smartphone,
+  "Game Dev": Gamepad2,
+  "Data Science": Database,
+  "Cloud & DevOps": Cloud,
+  "Blockchain": Box,
+  "Competitive Programming": Trophy,
+};
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -18,14 +47,6 @@ const bricolage = Bricolage_Grotesque({
 
 const departments = reviews;
 
-// Helper: hex color with alpha for inline style use
-const hexToRgba = (hex, alpha) => {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.substring(0, 2), 16);
-  const g = parseInt(h.substring(2, 4), 16);
-  const b = parseInt(h.substring(4, 6), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
-};
 
 const DepartmentsListPage = () => {
   const router = useRouter();
@@ -158,52 +179,66 @@ const DepartmentsListPage = () => {
     const isSelected = selectedDepartments.includes(department.name);
     const isSubmitted = submittedDepartments.includes(department.name);
     const accentColor = department.tone || "#8ab4f8";
+    const IconComponent = DEPARTMENT_ICONS[department.name] || Code2;
 
     return (
       <div
         className={cn(
           "relative flex flex-col justify-between transition-all duration-200 overflow-hidden",
           "border-l-[3px]",
-          featured ? "p-8 sm:p-10 min-h-[260px]" : "p-5 sm:p-6 min-h-[180px]",
+          featured ? "p-8 sm:p-10 min-h-[280px]" : "p-5 sm:p-6 min-h-[200px]",
           isSubmitted && "opacity-50"
         )}
         style={{
           background: "#0a0a0a",
-          borderLeftColor: isSelected ? accentColor : "rgba(255,255,255,0.1)",
+          borderLeftColor: isSelected ? accentColor : "rgba(255,255,255,0.12)",
           borderTop: "var(--editorial-rule)",
           borderRight: "var(--editorial-rule)",
           borderBottom: "var(--editorial-rule)",
           boxShadow: isSelected
-            ? `0 0 0 1px ${hexToRgba(accentColor, 0.2)}`
+            ? `0 0 0 1px ${hexToRgba(accentColor, 0.35)}`
             : "none",
           transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         }}
       >
-        {/* Per-department radial gradient wash — cosmetic only */}
+        {/* Per-department radial gradient wash — high intensity matching mockup */}
         <div
           aria-hidden="true"
           style={{
             position: "absolute",
             inset: 0,
-            background: `radial-gradient(ellipse at 85% 15%, ${accentColor}28 0%, ${accentColor}08 40%, rgba(10,10,10,0) 72%)`,
+            background: `radial-gradient(ellipse at 90% 15%, ${hexToRgba(accentColor, 0.45)} 0%, ${hexToRgba(accentColor, 0.15)} 50%, rgba(10,10,10,0) 80%)`,
             pointerEvents: "none",
             zIndex: 0,
             transition: "opacity 0.3s ease",
-            opacity: isSelected ? 1.4 : 1,
+            opacity: isSelected ? 1.5 : 1,
           }}
         />
 
         {/* Card content sits above the gradient wash */}
         <div className="relative z-10 flex flex-col h-full">
 
-          {/* Status badges row */}
+          {/* Header row: Status/Featured badges + Department Icon */}
           <div className="flex items-start justify-between gap-3 mb-5">
             <div className="flex items-center gap-2.5 flex-wrap">
-              {/* Dept tone pip */}
-              <span
-                className="inline-block w-2 h-2 rounded-full flex-shrink-0"
-                style={{ background: accentColor, opacity: 0.9 }}
-              />
+              {featured ? (
+                <span
+                  className="mono-label px-2 py-0.5"
+                  style={{
+                    border: `1px solid ${hexToRgba(accentColor, 0.6)}`,
+                    color: accentColor,
+                    fontSize: "10px",
+                    letterSpacing: "0.15em",
+                  }}
+                >
+                  FEATURED
+                </span>
+              ) : (
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ background: accentColor, opacity: 0.9 }}
+                />
+              )}
 
               {isSubmitted && (
                 <span
@@ -216,7 +251,7 @@ const DepartmentsListPage = () => {
                   Submitted ✓
                 </span>
               )}
-              {isSelected && !isSubmitted && (
+              {isSelected && !isSubmitted && !featured && (
                 <span
                   className="mono-label px-2 py-0.5"
                   style={{
@@ -229,44 +264,30 @@ const DepartmentsListPage = () => {
               )}
             </div>
 
-            {/* Details button */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                openDepartmentDetail(department.name);
-              }}
-              className="mono-label flex-shrink-0"
+            {/* Department Icon from lucide-react */}
+            <div
+              className="flex items-center justify-center p-2 rounded-lg flex-shrink-0"
               style={{
-                borderBottom: "1px solid rgba(255,255,255,0.2)",
-                paddingBottom: "1px",
-                color: "rgba(255,255,255,0.4)",
-                background: "none",
-                cursor: "pointer",
-                transition: "color 0.15s",
+                background: hexToRgba(accentColor, 0.12),
+                color: accentColor,
+                border: `1px solid ${hexToRgba(accentColor, 0.25)}`,
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "rgba(255,255,255,0.85)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "rgba(255,255,255,0.4)")
-              }
             >
-              Details →
-            </button>
+              <IconComponent size={featured ? 24 : 18} />
+            </div>
           </div>
 
-          {/* Department name — large on featured */}
+          {/* Department name */}
           <h3
             className={cn(
-              "font-extrabold tracking-tight leading-[0.92] mb-3",
+              "font-extrabold tracking-tight leading-[0.95] mb-3",
               featured
-                ? "text-4xl sm:text-5xl lg:text-6xl"
+                ? "text-3xl sm:text-4xl lg:text-5xl"
                 : "text-xl sm:text-2xl"
             )}
             style={{
               fontFamily: bricolage.style.fontFamily,
-              color: isSelected ? accentColor : "#ededed",
+              color: isSelected ? accentColor : "#ffffff",
               transition: "color 0.2s",
             }}
           >
@@ -276,8 +297,8 @@ const DepartmentsListPage = () => {
           {/* Description — pull-quote style */}
           <p
             className={cn(
-              "pull-quote leading-relaxed mb-5",
-              featured ? "text-sm sm:text-base" : "text-sm"
+              "pull-quote leading-relaxed mb-6",
+              featured ? "text-sm sm:text-base text-zinc-300" : "text-sm text-zinc-400"
             )}
             style={{
               display: "-webkit-box",
@@ -289,8 +310,8 @@ const DepartmentsListPage = () => {
             {department.description}
           </p>
 
-          {/* Checkbox — sole click target for selection */}
-          <div className="flex items-center gap-3 mt-auto">
+          {/* Bottom actions row: Checkbox + Details button */}
+          <div className="flex items-center justify-between gap-3 mt-auto pt-2">
             <label
               className={cn(
                 "flex items-center gap-2.5 cursor-pointer select-none",
@@ -310,9 +331,9 @@ const DepartmentsListPage = () => {
                 style={{
                   border: isSelected
                     ? `2px solid ${accentColor}`
-                    : "2px solid rgba(255,255,255,0.25)",
+                    : "2px solid rgba(255,255,255,0.3)",
                   background: isSelected
-                    ? hexToRgba(accentColor, 0.2)
+                    ? hexToRgba(accentColor, 0.25)
                     : "transparent",
                 }}
               >
@@ -331,11 +352,37 @@ const DepartmentsListPage = () => {
               </span>
               <span
                 className="mono-label"
-                style={{ color: isSelected ? accentColor : "rgba(255,255,255,0.35)" }}
+                style={{ color: isSelected ? accentColor : "rgba(255,255,255,0.5)" }}
               >
                 {isSubmitted ? "Submitted" : isSelected ? "Deselect" : "Select"}
               </span>
             </label>
+
+            {/* Details button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openDepartmentDetail(department.name);
+              }}
+              className="mono-label flex-shrink-0"
+              style={{
+                borderBottom: "1px solid rgba(255,255,255,0.2)",
+                paddingBottom: "1px",
+                color: "rgba(255,255,255,0.45)",
+                background: "none",
+                cursor: "pointer",
+                transition: "color 0.15s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = "#ffffff")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "rgba(255,255,255,0.45)")
+              }
+            >
+              Details →
+            </button>
           </div>
         </div>
       </div>
@@ -463,48 +510,13 @@ const DepartmentsListPage = () => {
             </div>
           ) : (
             <>
-              {/* ── Featured row — first 2 departments: visibly larger, asymmetric ── */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4, 1fr)",
-                  gap: "1px",
-                  background: "rgba(255,255,255,0.06)",
-                  marginBottom: "1px",
-                }}
-              >
-                {/* Featured card 0 — spans 3 of 4 cols on desktop */}
-                <div
-                  className="bg-[#0a0a0a]"
-                  style={{
-                    gridColumn: "span 4",
-                  }}
-                  // On md screens split to 3+1 via inline responsive isn't possible;
-                  // we use a nested grid approach for the featured pair
-                >
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(1, 1fr)",
-                      gap: "1px",
-                      background: "rgba(255,255,255,0.06)",
-                    }}
-                    className="md:[grid-template-columns:3fr_1.6fr]"
-                  >
-                    <div className="bg-[#0a0a0a]">
-                      <DepartmentCard
-                        department={computedDepartmentList[0]}
-                        featured
-                      />
-                    </div>
-                    <div className="bg-[#0a0a0a]">
-                      <DepartmentCard
-                        department={computedDepartmentList[1]}
-                        featured
-                      />
-                    </div>
+              {/* ── Featured row — top 2 departments: side-by-side horizontally on desktop ── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/[0.06] mb-px">
+                {computedDepartmentList.slice(0, 2).map((department) => (
+                  <div key={department.name} className="bg-[#0a0a0a]">
+                    <DepartmentCard department={department} featured />
                   </div>
-                </div>
+                ))}
               </div>
 
               {/* ── Standard grid — remaining 10 departments ── */}
