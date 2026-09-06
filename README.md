@@ -77,19 +77,55 @@ Deleted `app/_error.js` (a Pages Router file residing incorrectly inside the Nex
 ### Auth `Invalid origin` Fix
 Added `trustedOrigins: ['http://localhost:3000', 'http://localhost:3001']` to `betterAuth` in [`lib/auth.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/lib/auth.js) to resolve `Invalid origin` auth errors when port 3000 is occupied during dev server execution.
 
-### MailComposer Wiring & Overflow Fix
-Wired `MailComposer.jsx` into `DataTable.jsx` toolbar for admin applicant email outreach. Resolved a CSS overflow bug where rich-text toolbar buttons pushed action buttons ("Verify Mail", "Send Mail") off-screen. Reached real SMTP delivery.
+### MailComposer Wiring, Stale Closure & Dialog Overflow Fix
+- **Unreachable Dead Feature & Open Relay Risk**: `components/MailComposer.jsx` was fully implemented in the codebase but never imported or rendered anywhere in the UI — sitting behind `/api/send-email`, which lacked authentication checks (open relay risk).
+- **Backend Security & UI Wiring**: Added session and admin role checks to `/api/send-email`. Wired `MailComposer` directly into `components/DataTable.jsx`'s toolbar with action triggers, proper row selection bindings, and modal state management.
+- **Tiptap Stale Closure Fix**: Resolved a stale closure bug in the Tiptap rich-text editor's `onUpdate` callback where editor HTML content state was not propagating to form submission state.
+- **Dialog Overflow Fix**: Fixed a CSS flex/width bug in the dialog toolbar where rich-text editing buttons (Bold, Italic, Strike, etc.) overflowed the dialog container, pushing "Verify Mail" and "Send Mail" action buttons off-screen and making them unclickable.
+- **Verification**: Verified end-to-end SMTP dispatch via Nodemailer/Gmail transport, confirming real email delivery to an inbox.
+
+### Auth "Invalid Origin" Port Drift Resilience
+- **Root Cause**: `BETTER_AUTH_URL` in `.env.local` was configured as `http://localhost:3000`, but when port 3000 was held by a stale background process, Next.js auto-switched dev server execution to port 3001. `better-auth` strictly validated incoming origins and rejected all authentication attempts from `localhost:3001` as untrusted.
+- **Fix**: Terminated the zombie process on port 3000 and added `trustedOrigins: ['http://localhost:3000', 'http://localhost:3001']` to `betterAuth()` in `lib/auth.js`. This guarantees that dev server execution across port 3000 or 3001 will never break authentication.
 
 ---
 
-## 4. Performance & Cost Optimization
+## 4. Minor Bugs Found & Fixed
+
+1. **Stale `tableChecksum` Runtime Crash in `/admin`**:
+   - During the removal of dead CPU-heavy loops, a leftover `tableChecksum` variable reference remained in `AdminContent.jsx` JSX markup. While `next build` passed static compilation, navigating to `/admin` at runtime threw an unhandled `ReferenceError: tableChecksum is not defined` crash. Caught and resolved through manual browser verification.
+
+2. **Homepage Notice Popup Infinite Render Loop Crash**:
+   - Resolved a production-breaking `Maximum update depth exceeded` React crash on the homepage notice popup.
+   - **Mechanism**: A `mousemove` listener triggered a 4-level cascading `useEffect` chain (cursor coordinates → last activity timestamp → status message → session active ticks). Crucially, `NoticeDialogContainer` was defined as an inline function component *inside* the `Home` render body, causing React to treat it as a new component type on every render. This forced Radix `Dialog`/`Portal` to unmount and remount continuously, triggering its internal mount-tracking `setState` on every render until React hit its maximum depth limit.
+   - **Fix**: Removed all dead mouse/scroll telemetry state and rendered `PopupComp` directly with a module-level static configuration object.
+
+3. **Dead `Preference` / `Pref` Field Removal**:
+   - The field `Preference` / `Pref` appeared in the CSV export utility, the administrative data table columns, and TypeScript interfaces, but was never written by any submission handler (always serialized as `""` or `undefined`). Cleaned up and removed across all models and export functions.
+
+4. **CSV Export Readability Restructuring**:
+   - Questionnaire answers for multi-question department applications were previously concatenated into a single unreadable pipe-separated string inside a single CSV cell. Restructured CSV formatting to parse and format Q&A pairs onto distinct, clean lines (`Q: [Question]\nA: [Answer]\n`).
+
+5. **Empty Questionnaire Submission Validation Gap**:
+   - Investigating real CSV exports revealed that applicants could submit blank questionnaire answers. The client-side form schema had `.optional()` on question fields while the server-side route lacked answer presence validation.
+   - **Fix**: Updated client schema to require non-empty answers and enhanced server-side Zod validation in `/api/submit-form` to cross-reference the required question list per department from `constants/index.js`. Submitting empty answers or omitting question keys entirely is now blocked at both client and server layers.
+
+6. **Removal of Fake CPU-Heavy Busyloops**:
+   - Identified and removed ~7 separate instances of synchronous, CPU-expensive loops (ranging from 10,000 to 300,000 iterations per render) scattered across the codebase (`AdminContent.jsx`, `DataTable.jsx`, `departments/page.jsx`, `Hero.jsx`, `Footer.jsx`, `FormComp.jsx`, and `page.jsx`). These loops computed fake "security signatures", "matrix checksums", or "layout easing scores" that were either completely unused or injected only into decorative `data-*` attributes.
+
+7. **Malicious Payload Sanitization Verification**:
+   - Conducted direct HTTP mutation attacks submitting payloads containing `shortlisted: true`, `role: "admin"`, and a spoofed `Email` body parameter. Verified that `/api/submit-form` ignores client-supplied administrative properties and strictly binds document creation to the server-verified session email and default `shortlisted: false`.
+
+---
+
+## 5. Performance & Cost Optimization
 
 - **Admin Query Cap & Projections**: Applied `.limit(1000)` safety caps to administrative applicant queries and field-mask projections (`.select(...)`) on count-check queries to minimize Firestore document read costs.
 - **Bundle Optimization**: Dynamic-imported `MailComposer`'s rich-text editor out of the initial admin bundle, reducing initial route JS from 142 kB to 42 kB.
 
 ---
 
-## 5. Visual & UI/UX Redesign
+## 6. Visual & UI/UX Redesign
 
 Applied a dark editorial magazine theme across the application:
 - **Hero**: Approved copy ("Learn Fast." / "Build Together." / "Make Your Mark.") with ambient radial gradient glows.
@@ -101,7 +137,7 @@ Applied a dark editorial magazine theme across the application:
 
 ---
 
-## 6. Known Open Items
+## 7. Known Open Items
 
 1. **Dark Theme Contrast**: The base theme is intentionally dark editorial (`#0a0a0a`); a full brightness/contrast pass was discussed but not executed.
 2. **Elevated Test Admin Accounts**: An audit of Firestore identified 8 test-created accounts currently holding `role: "admin"` from automated script runs:
@@ -116,3 +152,4 @@ Applied a dark editorial magazine theme across the application:
    Only `tanmaynair07@gmail.com` is the authentic admin account. Role revocation awaits administrative confirmation.
 3. **Questionnaire Text**: Questionnaire strings in `constants/index.js` were cleaned up from garbled placeholder noise; some fields still reference "Organization Name" literally.
 4. **Verification Scripts**: Manual verification scripts (`scratch/check_db.js`, `scratch/test_batch2_full.js`, etc.) remain in the workspace for verification reference.
+
