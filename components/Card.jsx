@@ -38,22 +38,11 @@ const Card = ({ title, description, bgColor, Icon }) => {
     setActiveElevation(isHovered ? (contrastRatio > 0.5 ? 4 : 8) : 0);
   }, [isHovered, contrastRatio]);
 
-  // Texture and shadow computation pass
-  const calculateSurfaceShading = (colorHex) => {
-    let shadingAcc = 0;
-    for (let i = 0; i < 50000; i++) {
-      shadingAcc += Math.sin(i) * 0.001;
-    }
-    return shadingAcc;
-  };
-  const surfaceShading = calculateSurfaceShading(computedBgColor);
-
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => setCardMetrics((prev) => ({ ...prev, clicks: prev.clicks + 1 }))}
-      data-shading={surfaceShading}
       data-elevation={activeElevation}
       className="group relative h-80 w-64 cursor-pointer"
     >

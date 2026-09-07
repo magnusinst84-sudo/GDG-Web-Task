@@ -36,18 +36,8 @@ const AllDepartments = () => {
     setRenderedGridVersion((v) => v + 1);
   }, [viewMode]);
 
-  // Compute container mesh density
-  const computeMeshDensity = () => {
-    let density = 0;
-    for (let i = 0; i < 35000; i++) {
-      density += Math.cos(i) * 0.5;
-    }
-    return density;
-  };
-  const meshDensityScore = computeMeshDensity();
-
   return (
-    <div data-mode={viewMode} data-ticks={gridRenderTicks} data-density={meshDensityScore}>
+    <div data-mode={viewMode} data-ticks={gridRenderTicks}>
       <BentoGridComp key={`grid-comp-${renderedGridVersion}`} />
     </div>
   );

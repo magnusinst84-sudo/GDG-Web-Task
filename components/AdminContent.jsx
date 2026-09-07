@@ -40,8 +40,6 @@ const AdminContent = ({ applicants }) => {
   const totalApplicants = applicants?.length ?? 0;
   const shortlistedCount = applicants?.filter((a) => a.shortlisted === true).length ?? 0;
 
-  const isDev = process.env.NODE_ENV === "development";
-
   if (isPending) {
     return (
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-12">
@@ -50,7 +48,7 @@ const AdminContent = ({ applicants }) => {
     );
   }
 
-  if (!isDev && authStatus === "unauthenticated") {
+  if (authStatus === "unauthenticated") {
     return (
       <div
         className="max-w-md mx-auto my-12 px-8 py-10 text-center"
@@ -71,7 +69,7 @@ const AdminContent = ({ applicants }) => {
     );
   }
 
-  if (!isDev && !roleAuthorization) {
+  if (!roleAuthorization) {
     return (
       <div
         className="max-w-md mx-auto my-12 px-8 py-10 text-center"

@@ -115,7 +115,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
       .string()
       .min(1, "Phone is required")
       .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
-    "Year of Study": z.string().optional(),
+    "Year of Study": z.string().min(1, "Year of Study is required"),
   };
 
   questionData.forEach((qd) => {
@@ -130,6 +130,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
       RegistrationNumber: "",
       Email: "",
       Phone: "",
+      "Year of Study": "",
     },
   });
 
@@ -250,13 +251,26 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
       for (const department of departmentNames) {
         if (submittedDepartments.includes(department)) continue;
 
+        const deptQuestions = (
+          QuestionnaireData.find(
+            (item) => normalizeDeptName(item.department) === normalizeDeptName(department)
+          )?.questions ?? []
+        ).map(normaliseQuestion);
+
         const payload = {
           Email: values.Email,
           Name: values.Name,
           RegistrationNumber: values.RegistrationNumber,
           Department: department,
           Phone: values.Phone,
-          Answers: values,
+          "Year of Study": values["Year of Study"],
+          Questions: deptQuestions.reduce(
+            (answers, question) => ({
+              ...answers,
+              [question.name]: values[question.name] || "",
+            }),
+            {}
+          ),
         };
 
         const response = await fetch("/api/submit-form", {
@@ -443,6 +457,40 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                           <option value="Female" style={{ background: "#111" }}>Female</option>
                           <option value="Other" style={{ background: "#111" }}>Other</option>
                           <option value="Prefer not to say" style={{ background: "#111" }}>Prefer not to say</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs mt-1" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="Year of Study"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="mono-label block mb-2">Year of Study</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          value={field.value || ""}
+                          style={{
+                            width: "100%",
+                            background: "transparent",
+                            border: "none",
+                            borderBottom: "1px solid rgba(255,255,255,0.2)",
+                            borderRadius: 0,
+                            color: field.value ? "#ededed" : "rgba(255,255,255,0.25)",
+                            padding: "6px 0",
+                            fontSize: "14px",
+                            outline: "none",
+                          }}
+                        >
+                          <option value="" disabled style={{ background: "#111" }}>Select Year</option>
+                          <option value="1st Year" style={{ background: "#111" }}>1st Year</option>
+                          <option value="2nd Year" style={{ background: "#111" }}>2nd Year</option>
+                          <option value="3rd Year" style={{ background: "#111" }}>3rd Year</option>
+                          <option value="4th Year" style={{ background: "#111" }}>4th Year</option>
                         </select>
                       </FormControl>
                       <FormMessage className="text-red-400 text-xs mt-1" />
