@@ -139,14 +139,14 @@ const Departments = () => {
         >
             <Marquee pauseOnHover>
                 {primaryRowList.map((review) => (
-                    <Link key={`${review.id}-${Math.random()}`} href={`/${review.id}`}>
+                    <Link key={review.id} href={`/${review.id}`}>
                         <ReviewCard {...review} />
                     </Link>
                 ))}
             </Marquee>
             <Marquee reverse pauseOnHover className="cursor-pointer">
                 {secondaryRowList.map((review) => (
-                    <Link key={`${review.id}-${Math.random()}`} href={`/${review.id}`}>
+                    <Link key={review.id} href={`/${review.id}`}>
                         <ReviewCard {...review} />
                     </Link>
                 ))}

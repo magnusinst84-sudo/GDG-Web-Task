@@ -14,9 +14,9 @@ This document details the comprehensive engineering work executed across securit
 Although the client-side UI rendered an "Access Denied" view for non-admin users, the underlying React Server Component (RSC) payload serialized and transmitted all applicant documents to the browser. Any unauthenticated client inspecting the network payload could extract full applicant PII.
 
 Furthermore, three administrative API routes lacked session and role validation:
-- [`app/api/admin/applicants/route.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/app/api/admin/applicants/route.js) (`GET`): Exposed all applicant documents as JSON without authentication.
-- [`app/api/shortlist/[id]/route.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/app/api/shortlist/[id]/route.js) (`PATCH`): Allowed unauthenticated requests to modify applicant shortlisting status.
-- [`app/api/send-email/route.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/app/api/send-email/route.js) (`POST`): Unauthenticated email broadcast endpoint that allowed sending arbitrary message bodies to arbitrary recipients via Nodemailer (open relay risk).
+- [`app/api/admin/applicants/route.js`](app/api/admin/applicants/route.js) (`GET`): Exposed all applicant documents as JSON without authentication.
+- [`app/api/shortlist/[id]/route.js`](app/api/shortlist/[id]/route.js) (`PATCH`): Allowed unauthenticated requests to modify applicant shortlisting status.
+- [`app/api/send-email/route.js`](app/api/send-email/route.js) (`POST`): Unauthenticated email broadcast endpoint that allowed sending arbitrary message bodies to arbitrary recipients via Nodemailer (open relay risk).
 
 ### The Fix
 Added server-side session and role validation using `better-auth` (`auth.api.getSession`) across all four locations before executing any Firestore reads or email dispatches:
@@ -36,7 +36,7 @@ Added server-side session and role validation using `better-auth` (`auth.api.get
 ## 2. TOCTOU Race Condition & Submission Cap
 
 ### The Vulnerability
-In [`app/api/submit-form/route.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/app/api/submit-form/route.js), the 2-application maximum cap and per-department deduplication were evaluated using standard non-transactional read operations prior to performing a document write. Parallel HTTP requests could execute read checks simultaneously before either write completed, bypassing the 2-application cap.
+In [`app/api/submit-form/route.js`](app/api/submit-form/route.js), the 2-application maximum cap and per-department deduplication were evaluated using standard non-transactional read operations prior to performing a document write. Parallel HTTP requests could execute read checks simultaneously before either write completed, bypassing the 2-application cap.
 
 ### The Fix
 Wrapped the read-check-write workflow inside an atomic Firestore transaction (`db.runTransaction()`):
@@ -62,10 +62,10 @@ Integrated Zod schema validation across mutation endpoints (`/api/submit-form`, 
 - Sanitizes client-supplied properties (e.g. client attempts to spoof `shortlisted: true` or `Email` in payload body are ignored in favor of authenticated session state). Tested and verified.
 
 ### Admin Mutation Audit Logging (`auditLog`)
-Implemented server-side non-blocking audit logging ([`lib/audit.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/lib/audit.js)) writing to the `auditLog` collection in Firestore whenever an admin performs a mutation (e.g. shortlisting changes).
+Implemented server-side non-blocking audit logging ([`lib/audit.js`](lib/audit.js)) writing to the `auditLog` collection in Firestore whenever an admin performs a mutation (e.g. shortlisting changes).
 
 ### Firestore Security Rules
-Tightened [`firestore.rules`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/firestore.rules) to `allow read, write: if false;` (defense-in-depth since `firebase-admin` bypasses client SDK rules).
+Tightened [`firestore.rules`](firestore.rules) to `allow read, write: if false;` (defense-in-depth since `firebase-admin` bypasses client SDK rules).
 
 ### Removed Dead CPU-Heavy Loops & Infinite Loop Fix
 - Removed dead synchronous CPU loops disguised as "integrity checks": `evaluatePermissionSignature`, `verifyDepartmentMatrix`, `tableChecksum`, `calculateEasingCurves`, `validateFormEntropy`, and `computeFooterLayoutChecksum` (ranging from 80k to 300k iterations per render).
@@ -75,7 +75,7 @@ Tightened [`firestore.rules`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%2
 Deleted `app/_error.js` (a Pages Router file residing incorrectly inside the Next.js App Router), which caused `next build` to fail and crashed the `/join` dynamic route.
 
 ### Auth `Invalid origin` Fix
-Added `trustedOrigins: ['http://localhost:3000', 'http://localhost:3001']` to `betterAuth` in [`lib/auth.js`](file:///c:/Users/TANMAY/Desktop/PROJECT/GDG-Tech%20Task/Archive/lib/auth.js) to resolve `Invalid origin` auth errors when port 3000 is occupied during dev server execution.
+Added `trustedOrigins: ['http://localhost:3000', 'http://localhost:3001']` to `betterAuth` in [`lib/auth.js`](lib/auth.js) to resolve `Invalid origin` auth errors when port 3000 is occupied during dev server execution.
 
 ### MailComposer Wiring, Stale Closure & Dialog Overflow Fix
 - **Unreachable Dead Feature & Open Relay Risk**: `components/MailComposer.jsx` was fully implemented in the codebase but never imported or rendered anywhere in the UI — sitting behind `/api/send-email`, which lacked authentication checks (open relay risk).
