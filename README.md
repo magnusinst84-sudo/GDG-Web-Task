@@ -141,7 +141,25 @@ Applied a dark editorial magazine theme across the application:
 A subsequent edit to `app/(pages)/admin/page.jsx` introduced a conditional `!isDev &&` guard around the admin auth check, causing the entire session/role check to be skipped whenever `NODE_ENV === "development"` — silently reintroducing the exact PII leak described in Section 1, but only during local dev testing (i.e. every `npm run dev` session, including all manual testing performed this round). Caught via direct code review, not automated testing. Fixed by removing the `isDev` bypass entirely so the auth check is unconditional regardless of environment. A related unused dev-only demo-data fallback (fake sample applicants shown when Firestore is empty) was also removed since it was dead code once real applicant data existed.
 
 
-## 8. Known Open Items
+### 8. Critical Form Submission Payload Mismatch (Post-Redesign Regression)
+
+**The bug**: An external code review discovered that `components/FormComp.jsx`'s `handleSubmit` was sending a payload shaped as `{ ..., Answers: values }`, while `app/api/submit-form/route.js`'s Zod schema required `{ ..., Questions: {...}, "Year of Study": string }`. Additionally, no `"Year of Study"` input field was rendered in the form at all, despite the server requiring it. As a result, **every real submission through the actual UI form failed with a 400 validation error** — a regression introduced during an earlier refactor, not present in the original codebase.
+
+**Why it went unnoticed initially**: prior verification of the submission flow (the TOCTOU concurrency test, adversarial payload tests) was performed via direct API calls with correctly-shaped payloads, not by submitting through the actual rendered form — masking the UI/API contract mismatch.
+
+**The fix**:
+- Added a required `"Year of Study"` field to both the rendered form and the client-side Zod schema.
+- Rebuilt the submission payload to send `Questions` — a map of each department's real question names (cross-referenced from `QuestionnaireData`) to the user's actual answers — instead of the incorrect `Answers: values`.
+
+**Verification**: performed a real, authenticated, data-creating submission end-to-end. Confirmed a 200 response and inspected the resulting Firestore document directly — `Questions` contained real question/answer pairs and `"Year of Study"` was correctly populated. Re-confirmed the blank-answer validation (Section 4) still correctly rejects incomplete submissions against the corrected payload shape. Test data was cleaned up after verification.
+
+### 9. Final Cleanup Pass
+
+- **Unstable React keys**: `components/Departments.jsx` used `key={`${review.id}-${Math.random()}`}` on two department list renders — a new key on every render, causing unnecessary remounts (the same category of issue behind the earlier infinite-render-loop crash in Section 3). Replaced with the stable `key={review.id}` after confirming department IDs are unique.
+- **Dead documentation links**: replaced 7 absolute `file:///C:/Users/...` links in this README with relative repository-path links, so they resolve correctly when viewed on GitHub rather than only on the original development machine.
+- **Broken test script path**: `Test-suite/test_auth_session.js` had an incorrect relative `require("./lib/auth")` path. Removed in favor of the already-existing, correctly-pathed `Test-suite/test_auth_session.mjs`, which supersedes it.
+
+## 10. Known Open Items
 
 1. **Dark Theme Contrast**: The base theme is intentionally dark editorial (`#0a0a0a`); a full brightness/contrast pass was planned but not executed.
 2. **Elevated Test Admin Accounts — Resolved**: An audit of Firestore identified 8 test-created accounts holding `role: "admin"` from automated script runs. All have since been revoked/removed; only `tester@gmail.com` and few other accs were made with proper user as well as admin access.
