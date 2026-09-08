@@ -110,10 +110,10 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                     className="w-full bg-zinc-950 border-zinc-800 text-xs font-mono focus:border-zinc-500 rounded-none text-zinc-100 placeholder:text-zinc-500"
                                     placeholder="Subject"
                                     onChange={(e) =>
-                                        setPayloadData({
-                                            ...payloadData,
+                                        setPayloadData((prev) => ({
+                                            ...prev,
                                             subject: e.target.value,
-                                        })
+                                        }))
                                     }
                                 />
                                 {/* Select Template */}
@@ -124,10 +124,10 @@ export default function MailComposer({ recipients, handleRowSelection }) {
                                                 editor.commands.setContent("");
                                                 break;
                                             case "Interview Invite":
-                                                setPayloadData({
-                                                    ...payloadData,
+                                                setPayloadData((prev) => ({
+                                                    ...prev,
                                                     mailType: value,
-                                                });
+                                                }));
                                                 editor.commands.setContent(
                                                     mailingTemplate.Interview
                                                 );

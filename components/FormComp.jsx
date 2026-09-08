@@ -26,6 +26,9 @@ const normaliseQuestion = (question) => (
     : question
 );
 
+const normalizeDeptName = (str) =>
+str ? str.trim().toLowerCase().replace(/\s*\/\s*/g, "/") : "";
+
 // Map department names to their tone hex color
 const getDeptTone = (deptName) => {
   if (!deptName) return "#8ab4f8";
@@ -77,7 +80,7 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   // Function to check application count
   async function checkApplicationCount(userEmail) {
     const checkResponse = await fetch(
-      `/api/check-applications?email=${userEmail}`
+      `/api/check-applications?email=${encodeURIComponent(userEmail)}`
     );
     const { count } = await checkResponse.json();
 
@@ -90,48 +93,81 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
     }
   }
 
-  const normalizeDeptName = (str) => (str ? str.trim().toLowerCase().replace(/\s*\/\s*/g, "/") : "");
+    const questionData = useMemo(() => {
+      const questions = departmentNames.flatMap((department) =>
+        (
+          QuestionnaireData.find(
+            (item) =>
+              normalizeDeptName(item.department) === normalizeDeptName(department)
+          )?.questions ?? []
+        ).map(normaliseQuestion)
+      );
 
-  const questionData = useMemo(
-    () => [...new Set(departmentNames.flatMap((department) =>
-      (QuestionnaireData.find((item) => normalizeDeptName(item.department) === normalizeDeptName(department))?.questions ?? [])
-        .map(normaliseQuestion)
-        .map((question) => question.name)
-    ))],
-    [departmentNames]
-  );
+      return Array.from(
+        new Map(questions.map((question) => [question.name, question])).values()
+      );
+    }, [departmentNames]);
 
-  const schemaObj = {
-    Name: z.string().min(1, "Name is required"),
-    RegistrationNumber: z
-      .string()
-      .min(1, "Registration number is required")
+    const questionsByDepartment = useMemo(
+      () =>
+        departmentNames.map((department) => ({
+          department,
+          questions: (
+            QuestionnaireData.find(
+              (item) =>
+                normalizeDeptName(item.department) === normalizeDeptName(department)
+            )?.questions ?? []
+          ).map(normaliseQuestion),
+        })),
+      [departmentNames]
+    );
+
+    const formSchema = useMemo(() => {
+      const schemaObj = {
+      Name: z.string().trim().min(1, "Name is required"),
+      RegistrationNumber: z
+        .string()
+        .trim()
+        .min(1, "Registration number is required")
       .regex(
         /^\d{2}[A-Z]{3}\d{4}$/,
         "Registration number must be 2 numbers, 3 uppercase letters, and 4 numbers (e.g. 25BCE5612)"
       ),
-    Email: z.string(),
+    Email: z.string().email("Invalid email"),
+    Gender: z.string().optional(),
     Phone: z
       .string()
+      .trim()
       .min(1, "Phone is required")
       .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
-    "Year of Study": z.string().min(1, "Year of Study is required"),
-  };
+    "Year of Study": z.string().trim().min(1, "Year of Study is required"),
+    };
 
-  questionData.forEach((qd) => {
-    schemaObj[qd] = z.string().trim().min(1, "Answer is required");
-  });
+    questionData.forEach((question) => {
+      schemaObj[question.name] = z.string().trim().min(1, "Answer is required");
+    });
 
-  const formSchema = z.object(schemaObj);
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+    return z.object(schemaObj);
+  }, [questionData]);
+
+  const defaultValues = useMemo(
+    () => ({
       Name: "",
       RegistrationNumber: "",
       Email: "",
+      Gender: "",
       Phone: "",
       "Year of Study": "",
-    },
+      ...Object.fromEntries(questionData.map((question) => [question.name, ""])),
+    }),
+    [questionData]
+  );
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues,
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {
@@ -264,12 +300,14 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
           Department: department,
           Phone: values.Phone,
           "Year of Study": values["Year of Study"],
-          Questions: deptQuestions.reduce(
-            (answers, question) => ({
-              ...answers,
-              [question.name]: values[question.name] || "",
-            }),
-            {}
+          Gender: values.Gender || "",
+          Questions: Object.fromEntries(
+            deptQuestions.map((question) => [
+              question.name,
+              typeof values[question.name] === "string"
+                ? values[question.name].trim()
+                : "",
+            ])
           ),
         };
 
@@ -537,32 +575,13 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="Why do you want to join Organization Name?"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mono-label block mb-3">
-                      Why do you want to join Organization Name?
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        rows={4}
-                        placeholder="2-3 sentences…"
-                        className="field-underline resize-none focus:border-white transition-colors"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs mt-1" />
-                  </FormItem>
-                )}
-              />
             </section>
 
             <div className="editorial-rule" />
 
-            {renderDepartmentQuestions(departmentNames[0], QuestionnaireData, form, dept1Tone)}
-            {departmentNames[1] && renderDepartmentQuestions(departmentNames[1], QuestionnaireData, form, dept2Tone)}
+            {renderDepartmentQuestions(questionsByDepartment[0], form, dept1Tone)}
+            {questionsByDepartment[1] &&
+              renderDepartmentQuestions(questionsByDepartment[1], form, dept2Tone)}
 
             <div
               className="pt-6 flex justify-end"
@@ -588,12 +607,10 @@ const FormComp = ({ dept1, dept2, isLoading, setIsLoading }) => {
   );
 };
 
-const renderDepartmentQuestions = (department, QuestionnaireData, form, accentColor) => {
-  const questions = (
-    QuestionnaireData.find(qd => qd.department === department)?.questions ?? []
-  )
-    .map(normaliseQuestion)
-    .filter((question) => question.name !== "Why do you want to join Organization Name?" && question.name !== "Why do you want to join DWASFW?");
+const renderDepartmentQuestions = (departmentConfig, form, accentColor) => {
+  if (!departmentConfig) return null;
+
+  const { department, questions } = departmentConfig;
 
   if (!questions.length) return null;
 
@@ -639,18 +656,27 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form, accentCo
                     <FormControl>
                       {isCompact ? (
                         <Input
-                          {...field}
+                          ref={field.ref}
+                          name={field.name}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value)}
                           placeholder={question.placeholder || "Answer…"}
                           className="field-underline transition-colors"
                           style={{
                             borderColor: "rgba(255,255,255,0.2)",
                           }}
                           onFocus={(e) => (e.target.style.borderColor = accentColor)}
-                          onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.2)")}
+                          onBlur={(e) => {
+                            field.onBlur(e);
+                            e.target.style.borderColor = "rgba(255,255,255,0.2)";
+                          }}
                         />
                       ) : (
                         <Textarea
-                          {...field}
+                          ref={field.ref}
+                          name={field.name}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value)}
                           rows={4}
                           placeholder={question.placeholder || "2-3 sentences…"}
                           className="field-underline resize-none transition-colors"
@@ -658,7 +684,10 @@ const renderDepartmentQuestions = (department, QuestionnaireData, form, accentCo
                             borderColor: "rgba(255,255,255,0.2)",
                           }}
                           onFocus={(e) => (e.target.style.borderColor = accentColor)}
-                          onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.2)")}
+                          onBlur={(e) => {
+                            field.onBlur(e);
+                            e.target.style.borderColor = "rgba(255,255,255,0.2)";
+                          }}
                         />
                       )}
                     </FormControl>
