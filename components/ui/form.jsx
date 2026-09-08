@@ -1,7 +1,12 @@
 "use client";
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { Controller, FormProvider, useFormContext } from "react-hook-form";
+import {
+    Controller,
+    FormProvider,
+    useFormContext,
+    useFormState,
+} from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -21,7 +26,8 @@ const FormField = ({ ...props }) => {
 const useFormField = () => {
     const fieldContext = React.useContext(FormFieldContext);
     const itemContext = React.useContext(FormItemContext);
-    const { getFieldState, formState } = useFormContext();
+    const { getFieldState, control } = useFormContext();
+    const formState = useFormState({ control, name: fieldContext.name });
 
     const fieldState = getFieldState(fieldContext.name, formState);
 

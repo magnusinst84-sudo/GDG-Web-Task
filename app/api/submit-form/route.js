@@ -12,36 +12,23 @@ const normaliseQuestion = (question) => (
     : question
 );
 
-const VALID_DEPARTMENTS = [
-  "Management",
-  "Publicity",
-  "Outreach",
-  "UI/UX",
-  "Creatives / Design",
-  "Web Dev",
-  "App Dev",
-  "Game Dev",
-  "Data Science",
-  "Cloud & DevOps",
-  "Blockchain",
-  "Competitive Programming",
-];
+const normalizeDeptName = (str) =>
+    str ? str.trim().toLowerCase().replace(/\s*\/\s*/g, "/") : "";
+
+const VALID_DEPARTMENTS = QuestionnaireData.map((item) => item.department);
 
 const submitFormSchema = z.object({
-  Name: z.string({ required_error: "Name is required" }).trim().min(1, "Name cannot be empty"),
+  Name: z.string({ required_error: "Name is required" }).trim().min(1, "Name is required"),
   RegistrationNumber: z
     .string({ required_error: "RegistrationNumber is required" })
     .trim()
     .regex(/^\d{2}[A-Z]{3}\d{4}$/, "Registration number must be 2 numbers, 3 uppercase letters, and 4 numbers (e.g. 25BCE5612)"),
-  Phone: z.string({ required_error: "Phone is required" }).trim().min(1, "Phone cannot be empty"),
-  "Year of Study": z.string({ required_error: "Year of Study is required" }).trim().min(1, "Year of Study cannot be empty"),
-  Email: z.string().email("Invalid email format").optional().or(z.literal("")),
-  Department: z.enum(VALID_DEPARTMENTS, {
-    errorMap: () => ({
-      message: `Department must be one of: ${VALID_DEPARTMENTS.join(", ")}`,
-    }),
-  }),
-  Questions: z.record(z.string(), z.string().trim().min(1, "All question answers must be non-empty")).optional().default({}),
+  Phone: z.string({ required_error: "Phone is required" }).trim().min(1, "Phone is required").regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+  "Year of Study": z.string({ required_error: "Year of Study is required" }).trim().min(1, "Year of Study is required"),
+  Email: z.string().email("Invalid email"),
+  Gender: z.string().optional().default(""),
+  Department: z.string().trim().min(1, "Department is required"),
+  Questions: z.record(z.string(), z.string().trim().min(1, "All question answers must be non-empty")),
 });
 
 export async function POST(req) {
@@ -118,11 +105,42 @@ export async function POST(req) {
       );
     }
 
-    const { Department, Questions, Name, RegistrationNumber, Phone, ["Year of Study"]: yearOfStudy } = parseResult.data;
+    const {
+      Department,
+      Questions,
+      Name,
+      RegistrationNumber,
+      Phone,
+      Gender,
+      Email,
+      ["Year of Study"]: yearOfStudy,
+    } = parseResult.data;
+    const canonicalDepartment = VALID_DEPARTMENTS.find(
+      (department) =>
+        normalizeDeptName(department) === normalizeDeptName(Department)
+    );
 
-    const normalizeDeptName = (str) => (str ? str.trim().toLowerCase().replace(/\s*\/\s*/g, "/") : "");
+    if (!canonicalDepartment) {
+      const errorMessage = `Validation failed: Department must be one of: ${VALID_DEPARTMENTS.join(", ")}`;
+      return new Response(JSON.stringify({
+        success: false,
+        message: errorMessage,
+        error: errorMessage,
+        data: null,
+      }), { status: 400 });
+    }
+
+    if (Email !== userEmail) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: "Email must match the authenticated account",
+        error: "Email must match the authenticated account",
+        data: null,
+      }), { status: 403 });
+    }
+
     const deptConfig = QuestionnaireData.find(
-      (item) => normalizeDeptName(item.department) === normalizeDeptName(Department)
+      (item) => normalizeDeptName(item.department) === normalizeDeptName(canonicalDepartment)
     );
     const expectedQuestions = (deptConfig?.questions ?? []).map(normaliseQuestion).map((q) => q.name);
 
@@ -151,11 +169,13 @@ export async function POST(req) {
         const existingSubmissionsSnapshot = await t.get(query);
 
         const alreadySubmittedDept = existingSubmissionsSnapshot.docs.some(
-          (doc) => doc.data()?.Department === Department
+          (doc) =>
+            normalizeDeptName(doc.data()?.Department) ===
+            normalizeDeptName(canonicalDepartment)
         );
 
         if (alreadySubmittedDept) {
-          throw new Error(`You have already submitted an application for ${Department}`);
+          throw new Error(`You have already submitted an application for ${canonicalDepartment}`);
         }
 
         if (existingSubmissionsSnapshot.size >= 2) {
@@ -168,9 +188,10 @@ export async function POST(req) {
           RegistrationNumber,
           Phone,
           "Year of Study": yearOfStudy,
-          Department,
+          Department: canonicalDepartment,
           Questions: Questions || {},
           Email: userEmail,
+          Gender,
           shortlisted: false,
           createdAt: new Date(),
         });
@@ -180,7 +201,7 @@ export async function POST(req) {
         JSON.stringify({
           success: true,
           message: "Form submitted successfully!",
-          data: { department: Department },
+          data: { department: canonicalDepartment },
           error: null,
         }),
         { status: 200 }

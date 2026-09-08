@@ -157,6 +157,23 @@ A subsequent edit to `app/(pages)/admin/page.jsx` introduced a conditional `!isD
 
 - **Unstable React keys**: `components/Departments.jsx` used `key={`${review.id}-${Math.random()}`}` on two department list renders — a new key on every render, causing unnecessary remounts (the same category of issue behind the earlier infinite-render-loop crash in Section 3). Replaced with the stable `key={review.id}` after confirming department IDs are unique.
 - **Dead documentation links**: replaced 7 absolute `file:///C:/Users/...` links in this README with relative repository-path links, so they resolve correctly when viewed on GitHub rather than only on the original development machine.
+
+## Setup and Operations
+
+1. Install dependencies with `npm install --legacy-peer-deps` (the current dependency
+   manifest has a TypeScript peer-version conflict).
+2. Copy `.env.example` to `.env.local` and configure Firebase Admin credentials,
+   `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, Google OAuth credentials, and optional
+   SMTP credentials. Set `BETTER_AUTH_TRUSTED_ORIGIN` to the deployed HTTPS origin;
+   localhost origins are included for development.
+3. Start development with `npm run dev`.
+4. Build and start production with `npm run build` and `npm run start`.
+5. Firestore client rules deny direct reads and writes; application data is accessed
+   through authenticated server routes. Use the Firebase emulator or an isolated
+   Firebase project for any test scripts that write data.
+
+There is currently no `npm test` script. The scripts in `Test-suite/` require explicit
+test credentials/project isolation and must not be run against production Firestore.
 - **Broken test script path**: `Test-suite/test_auth_session.js` had an incorrect relative `require("./lib/auth")` path. Removed in favor of the already-existing, correctly-pathed `Test-suite/test_auth_session.mjs`, which supersedes it.
 
 ## 10. Known Open Items

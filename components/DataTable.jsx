@@ -41,6 +41,12 @@ const DataTable = ({ data }) => {
   const [deptFiltered, setDeptFiltered] = useState(data);
   const [shortFiltered, setShortFiltered] = useState(data);
 
+  useEffect(() => {
+    setDeptFiltered(data);
+    setShortFiltered(data);
+    setTableData(data);
+  }, [data]);
+
   const commonElements = (arr1, arr2) => {
     let common = [];
     arr1.map((elt1) => {
@@ -81,7 +87,7 @@ const DataTable = ({ data }) => {
     } else {
       setTableData(data);
     }
-  }, [deptFiltered, shortFiltered]);
+  }, [data, deptFiltered, shortFiltered]);
 
   const handleShortlist = async (id, isShortlisted) => {
     try {
